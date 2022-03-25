@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="RelativeMOVE2" Id="{5c286ccf-bb60-412b-9215-7d1e9a39847f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK RelativeMOVE2
+VAR_INPUT
+	MoveAxisIdx			: INT;
+	MoveDistance		: LREAL;
+	MoveVelocity			: LREAL;
+	MoveAcceleration		: LREAL;
+	MoveDeceleration		: LREAL;
+	MoveJerk			: LREAL;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+Axis[MoveAxisIdx].fbMC_MoveRelative[2](
+	Execute  		:= TRUE,
+	Distance		:= MoveDistance,
+	Velocity  		:= MoveVelocity,
+	Acceleration   := MoveAcceleration,
+	Deceleration  := MoveDeceleration,
+	Jerk			:= MoveJerk,
+	BufferMode     := MC_BlendingHigh,
+	Axis			:= Axis[MoveAxisIdx].Axis
+);
+
+Axis[MoveAxisIdx].fbMC_MoveRelative[2](
+	Execute  		:= FALSE,
+	Axis			:= Axis[MoveAxisIdx].Axis
+);
+]]></ST>
+    </Implementation>
+    <LineIds Name="RelativeMOVE2">
+      <LineId Id="13" Count="16" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

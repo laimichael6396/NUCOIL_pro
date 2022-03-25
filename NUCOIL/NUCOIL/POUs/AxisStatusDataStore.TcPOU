@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="AxisStatusDataStore" Id="{9d47c4a0-46c5-48a4-acdc-42bb4c87d2ef}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM AxisStatusDataStore
+VAR
+	idx				: INT:=1;
+	count			: INT:=0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR idx:=1 TO No DO
+	RingBufferAxesPosBuf[idx].SetPos[count] := Axis[Idx].Axis.NcToPlc.SetPos;
+	RingBufferAxesPosBuf[idx].ActPos[count] := Axis[Idx].Axis.NcToPlc.ActPos;
+	RingBufferAxesVelBuf[idx].SetVel[count] := Axis[Idx].Axis.NcToPlc.SetVelo;
+	RingBufferAxesVelBuf[idx].ActVel[count] := Axis[Idx].Axis.NcToPlc.ActVelo;
+	RingBufferAxesTrqBuf[idx].Trq[count] := AxesTorque[Idx];
+END_FOR
+
+IF count = 999 THEN
+	count := 0;
+ELSE
+	count := count + 1;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="AxisStatusDataStore">
+      <LineId Id="5" Count="12" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

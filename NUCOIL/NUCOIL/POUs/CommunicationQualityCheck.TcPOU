@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="CommunicationQualityCheck" Id="{64fd8b20-8971-41cf-9ef9-a1c128a80cec}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM CommunicationQualityCheck
+VAR
+	ClearError							: BOOL;
+	IsError								: BOOL;
+	LostFrames							: UDINT;
+	DevState							: WORD;
+
+	EcGetMasterDevState					: FB_EcGetMasterDevState;
+	EcMasterFrameStatistic				: FB_EcMasterFrameStatistic;
+	EcGetAllSlaveCrcErrors				: FB_EcGetAllSlaveCrcErrors;
+	EcGetSlaveCrcErrorEx					: ARRAY[0..MaxSlaves] OF FB_EcGetSlaveCrcErrorEx;
+
+	lastCrcErrorBuf						: ARRAY[0..MaxSlaves] OF DWORD;
+	crcErrorBuf					      		: ARRAY[0..MaxSlaves] OF DWORD;
+	portError								: ARRAY[0..MaxSlaves] OF ST_EcCrcErrorEx;
+
+	firstTime								: BOOL := TRUE;
+	idx									: INT;
+	counter500ms							: INT:=0;
+	execute								: BOOL := TRUE;
+	masterDevStateString					: STRING;
+	lastlostFrames						: UDINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF counter500ms = 500 THEN
+	counter500ms := 0;
+	execute := FALSE;
+ELSE
+	execute := TRUE;
+END_IF
+counter500ms := counter500ms + 1;
+
+IF ClearError THEN
+	ClearError := FALSE;
+	IsError 	   := FALSE;
+	devState    := 0;
+	firstTime     := TRUE;
+END_IF
+
+EcGetMasterDevState(
+	sNetId:= DeviceNetId,
+	bExecute:= execute,
+	tTimeout:= ,
+	bBusy=> ,
+	bError=> ,
+	nErrId=> ,
+	nDevState=> );
+IF EcGetMasterDevState.nDevState <> 0 THEN
+	IsError := TRUE;
+	devState := EcGetMasterDevState.nDevState;
+END_IF
+
+EcMasterFrameStatistic(
+	sNetId:= DeviceNetId,
+	bExecute:= execute,
+	tTimeout:= ,
+	bBusy=> ,
+	bError=> ,
+	nErrId=> ,
+	nLostFrames=> lostFrames,
+	fFramesPerSecond=> ,
+	nLostQueuedFrames=> ,
+	fQueuedFramesPerSecond=> );
+IF lastLostFrames <> lostFrames AND lostFrames <> 0 THEN
+	IsError := TRUE;
+	lastLostFrames := lostFrames;
+END_IF
+
+EcGetAllSlaveCrcErrors(
+	sNetId:= DeviceNetId,
+	pCrcErrorBuf:= ADR(crcErrorBuf),
+	cbBufLen:= SIZEOF(crcErrorBuf[0])* (MaxSlaves + 1),
+	bExecute:= execute,
+	tTimeout:= ,
+	bBusy=> ,
+	bError=> ,
+	nErrId=> ,
+	nSlaves=> );
+IF firstTime THEN
+	firstTime := FALSE;
+	FOR idx := 0 TO MaxSlaves DO
+		lastCrcErrorBuf[idx] := crcErrorBuf[idx];
+	END_FOR
+ELSE
+	FOR idx := 0 TO MaxSlaves DO
+		IF lastCrcErrorBuf[idx] <> crcErrorBuf[idx] AND crcErrorBuf[idx] <> 0 THEN
+			IsError := TRUE;
+			lastCrcErrorBuf[idx] := crcErrorBuf[idx];
+			EcGetSlaveCrcErrorEx[idx](
+				sNetId:= DeviceNetId,
+				nSlaveAddr:= SlaveConfigData[idx].nAddr,
+				bExecute:= TRUE,
+				tTimeout:= ,
+				bBusy=> ,
+				bError=> ,
+				nErrId=> ,
+				crcError=> portError[idx]);
+		ELSE
+			EcGetSlaveCrcErrorEx[idx](bExecute:= FALSE, crcError=> portError[idx]);
+			SlaveEcData[idx].PortA := portError[idx].portA;
+			SlaveEcData[idx].PortB := portError[idx].portB;
+			SlaveEcData[idx].PortC := portError[idx].portC;
+			SlaveEcData[idx].PortD := portError[idx].portD;
+		END_IF
+	END_FOR
+END_IF
+
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="CommunicationQualityCheck">
+      <LineId Id="23" Count="87" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

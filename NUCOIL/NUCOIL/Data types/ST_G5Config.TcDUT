@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_G5Config" Id="{51923dfc-d876-4d26-beae-9b2a90aff627}">
+    <Declaration><![CDATA[TYPE ST_G5Config :
+STRUCT
+	ATime		: UDINT;
+	BTime		: UDINT;
+	RepeatTimes :UINT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

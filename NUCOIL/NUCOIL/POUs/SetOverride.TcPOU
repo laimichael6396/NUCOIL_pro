@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="SetOverride" Id="{2f2d38c1-3d69-4bd6-8775-f6fcfcac0321}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM SetOverride
+VAR
+	ProduceSpeed	: INT:= 0;
+	VRSpeed 		: REAL;
+	TestSpeed		: INT:=0;
+	MPGRate			: LREAL :=0;
+	idx				: INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[VRSpeed := EL3062_VR/26350.0;
+IF VRSpeed < 0.01 THEN
+	VRSpeed := 0;
+ELSIF VRSpeed > 1 THEN
+	VRSpeed := 1;
+END_IF
+
+IF State = ENUMSTATE.S_AUTO THEN
+	Override := ProduceSpeed;
+
+ELSIF State = ENUMSTATE.S_TEST THEN
+	TestSpeed := LREAL_TO_INT(ProduceSpeed * VRSpeed);
+
+	IF MachineSubType = MachineSubTypeEnum.CE AND IOSwitch.SaftyEnable (*CE要降速度 不超過30%*)
+	AND (Inputstate.SafetyError1 OR Inputstate.SafetyError2 OR Inputstate.SafetyError3 OR Inputstate.SafetyError4) 
+	THEN
+		TestSpeed := SEL(TestSpeed > 30, TestSpeed, 30);
+	END_IF
+
+	Override := TestSpeed;
+
+ELSIF State = ENUMSTATE.S_MPG THEN
+	IF Mpg_PositiveMove = TRUE THEN
+		MPGRate := SEL(MPGRate + 0.25 > 10, MPGRate + 0.25, 10);
+	ELSE
+		MPGRate := SEL(MPGRate - 0.25 < 0, MPGRate - 0.25, 0);
+	END_IF
+	Override := MPGRate;
+
+ELSIF SubRunning THEN
+	Override := LREAL_TO_INT(100 * VRSpeed);
+
+ELSIF MoveToColPosRunning THEN
+	Override := LREAL_TO_INT(20 * VRSpeed);
+
+END_IF
+
+IF IsVirtualOOverride THEN
+	FOR idx:=1 TO NO DO
+	 	Axis[idx].fbMC_SetOverride(
+			Enable		:= TRUE,
+			VelFactor	:= Override,
+			AccFactor 	:= 1,
+			JerkFactor 	:= 1,
+			Axis		:= Axis[idx].Axis,
+		);
+	END_FOR
+ELSIF IsUseVROverride THEN
+	FOR idx:=1 TO NO DO
+	 	Axis[idx].fbMC_SetOverride(
+			Enable		:= TRUE,
+			VelFactor	:= VRSpeed,
+			AccFactor 	:= 1,
+			JerkFactor 	:= 1,
+			Axis		:= Axis[idx].Axis,
+		);
+	END_FOR
+ELSE
+	FOR idx:=1 TO NO DO
+	 	Axis[idx].fbMC_SetOverride(
+			Enable		:= TRUE,
+			VelFactor	:= 1,
+			AccFactor 	:= 1,
+			JerkFactor 	:= 1,
+			Axis		:= Axis[idx].Axis,
+		);
+	END_FOR
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="SetOverride">
+      <LineId Id="8" Count="67" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

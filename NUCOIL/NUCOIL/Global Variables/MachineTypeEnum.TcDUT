@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="MachineTypeEnum" Id="{3e4b9652-1d51-49e3-8545-0194283b2b7d}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE 
+	MachineTypeEnum					: (_08x, _25x, _42x, _60x, _1020, _1320, _1350, _1320XYZ, _1370XYZ);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

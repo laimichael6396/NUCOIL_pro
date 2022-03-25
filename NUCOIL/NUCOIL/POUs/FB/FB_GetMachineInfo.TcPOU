@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_GetMachineInfo" Id="{ae8bccc5-ae1e-4e43-8154-692a11ce85d5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_GetMachineInfo
+VAR_INPUT
+	Execute	:BOOL;
+END_VAR
+VAR_OUTPUT
+	Busy	:BOOL;
+END_VAR
+VAR
+	seq						:INT:=0;
+	idx						:INT:=0;
+
+	fbGetLocalAmsNetId 		:FB_GetLocalAmsNetId;
+	addrBytes				:AMSNETID :=[ 0,0,0,0,0,0];(* TwinCAT-specific network address as array of byte *)
+
+	iofGetDeviceNetId 		:IOF_GetDeviceNetId;
+
+ 	fbEcGetAllSlaveAddr 		:FB_EcGetAllSlaveAddr;
+    	slaveAddr          			:ARRAY[0..MaxSlaves] OF UINT;
+
+	fbEcGetConfSlaves 		:FB_EcGetConfSlaves;
+
+	vendorId 	: UDINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Execute THEN
+	Busy := TRUE;
+
+	CASE seq OF
+		0:
+			fbGetLocalAmsNetId(
+				bExecute :=TRUE,
+				tTimeOut := t#2s,
+				AddrString =>AmsNetId,
+				AddrBytes =>AddrBytes,
+			);
+
+			IF NOT fbGetLocalAmsNetId.bBusy THEN
+				fbGetLocalAmsNetId(bExecute := FALSE);
+				seq := 1;
+			END_IF
+		1:
+			iofGetDeviceNetId(
+				NetID := AmsNetId,
+				Start := TRUE,
+				DeviceID := 1,
+				DeviceNetId =>DeviceNetId,
+			);
+
+			IF NOT iofGetDeviceNetId.BUSY THEN
+				iofGetDeviceNetId(Start := FALSE);
+				seq		       := 2;
+			END_IF
+		2:
+			fbEcGetAllSlaveAddr(
+				sNetId:= DeviceNetId,
+				pAddrBuf:= ADR(slaveAddr),
+				cbBufLen:= SIZEOF(slaveAddr[0]) * (MaxSlaves + 1),
+				bExecute:= TRUE,
+				tTimeout:= ,
+				bBusy=> ,
+				bError=> ,
+				nErrId=> ,
+				nSlaves=> );
+			IF NOT fbEcGetAllSlaveAddr.bBusy THEN
+				fbEcGetAllSlaveAddr(bExecute:= FALSE);
+				seq       := 3;
+			END_IF
+
+		3:
+			fbEcGetConfSlaves(
+				sNetId:= DeviceNetId,
+				pArrEcConfSlaveInfo:= ADR(SlaveConfigData),
+				cbBufLen:= SIZEOF(SlaveConfigData[0]) * (MaxSlaves + 1),
+				bExecute:= TRUE,
+				tTimeout:= ,
+				bBusy=> ,
+				bError=> ,
+				nErrorId=> ,
+				nSlaves=> );
+			IF NOT fbEcGetConfSlaves.bBusy THEN
+				FOR idx := 0 TO MaxSlaves DO
+					SlaveEcData[idx].Name := SlaveConfigData[idx].sName;
+					SlaveEcData[idx].sType := SlaveConfigData[idx].sType;
+				END_FOR
+				fbEcGetConfSlaves(bExecute:= FALSE);
+				seq       := 4;
+			END_IF
+		4:
+			Axis[1].fbSDORead(
+				bExecute:=TRUE,
+				sNetId:= DeviceNetId,
+				nSlaveAddr :=1009,(*第一軸*)
+				nIndex:=16#1018,
+				nSubIndex :=1,
+				 pDstBuf:= ADR(vendorId),
+				cbBufLen:=SIZEOF(vendorId)
+			);
+			IF NOT Axis[1].fbSDORead.bBusy THEN
+				 Axis[1].fbSDORead.bExecute := FALSE;
+				seq		       := 5;
+
+				IF vendorId = 16#01DD THEN
+					MotorVendor := MotorVenderEnum.DELTA;
+				ELSIF vendorId = 16#0539 THEN
+					MotorVendor := MotorVenderEnum.YASKAWA;
+				ELSE
+					MotorVendor := MotorVenderEnum.SANYO;
+				END_IF
+			END_IF
+		5:
+			Busy:=FALSE;
+
+	END_CASE
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_GetMachineInfo">
+      <LineId Id="23" Count="89" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_FNeedHoldPos" Id="{cb1ecae5-6d6d-4354-9b1b-39a5f9296e43}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_FNeedHoldPos
+VAR_INPUT
+	IsTouch			: BOOL;
+	IsPreTouch		: BOOL;
+	CurrentIdx		: DINT;
+	FeederStartIdx	: ARRAY [0..999] OF DINT;
+	FeederEndIdx	: ARRAY [0..999] OF DINT;
+	FeederIdx		: INT := 0;
+	TouchConfig		: ARRAY [1..TouchNo] OF ST_TouchConfig;
+	TouchConfigIdx	: ARRAY [1..TouchNo] OF  INT;
+END_VAR
+VAR_OUTPUT
+	Yes				:BOOL;
+END_VAR
+VAR
+	touchIdx			:INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+Yes := FALSE;
+
+IF (IsTouch AND CurrentIdx > FeederStartIdx[FeederIdx]  AND  CurrentIdx < FeederEndIdx[FeederIdx]) THEN
+	Yes := TRUE;
+ELSIF IsPreTouch THEN
+	FOR touchIdx := 1 TO TouchNo DO
+		IF    CurrentIdx >= TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]] AND CurrentIdx < TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+		OR CurrentIdx >= TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx] + 1] AND CurrentIdx < TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx] + 1] THEN
+			Yes := TRUE;
+		END_IF
+	END_FOR
+END_IF
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_FNeedHoldPos">
+      <LineId Id="17" Count="14" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

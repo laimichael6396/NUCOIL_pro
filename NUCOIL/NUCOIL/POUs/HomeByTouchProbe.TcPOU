@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="HomeByTouchProbe" Id="{327ea283-5803-4274-bede-b8acdf7e8e5c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM HomeByTouchProbe
+VAR
+	ENUMHOMINGSTATE  : (S_STARTHOMING, S_RESET, S_DELAYFORSTOP, S_MOVETONEWZERO, S_DELAYFORSTOP2, S_SETPOSITION, S_HOMINGCOMPLETE);
+	HomingST			  : ARRAY [1..No] OF ST_TouchProbeHomeByUI;
+	HomingStart			  : ARRAY [1..No] OF BOOL;
+	HomingState			  : ARRAY [1..No] OF INT;
+	idx 				           : INT;
+	ActPos   				  : LREAL;
+	MoveDis			 	  : LREAL;
+	Trig1				  : ARRAY [1..No] OF R_TRIG;
+	Trig2				  : ARRAY [1..No] OF R_TRIG;
+	Trig3				  : ARRAY [1..No] OF R_TRIG;
+	Timer			 	  : ARRAY [1..No] OF TON;
+	Timer2			 	  : ARRAY [1..No] OF TON;
+	FB_TouchProbe		  : FB_TouchProbe;
+	RelativeMOVE 	 	  : RelativeMOVE;
+	GetActPos			  : MC_ReadActualPosition;
+	posset				  : LREAL;
+	PosNear				  : FB_PosNear;
+	PosIsNear			  : BOOL:=FALSE;
+	CloseAir				  : FB_CloseAir;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF State = ENUMSTATE.S_ZRT THEN
+	IF ZRTFirstTime = TRUE THEN
+		(*Override		:= 100;*)
+		ZRTFirstTime := FALSE;
+		PosIsNear	 := FALSE;
+		IF IsZrtGrpSelect = FALSE THEN
+			(*非選軸回原點時, 汽缸初始化*)
+						CloseAir();
+	    END_IF
+		(*初始化電子凸輪狀態Decouple*)
+		FOR idx:=1 TO No DO
+			Cam[idx].CamOut(Execute := TRUE, Slave:=Axis[idx].Axis);
+		END_FOR
+		FOR idx := 1 TO No DO
+			HomingState[idx] := S_STARTHOMING;
+			AxisTouchProbe[idx].Execute := FALSE;
+			Trig1[idx](CLK:= FALSE);
+			Trig2[idx](CLK:= FALSE);
+			Trig3[idx](CLK:= FALSE);
+		END_FOR
+	END_IF
+
+	FOR idx:=1 TO No DO
+		IF HomingST[idx].Execute = TRUE THEN
+			HomingStart[idx] := TRUE;
+		END_IF
+
+		IF HomingStart[idx] = TRUE THEN
+
+			CASE HomingState[idx] OF
+				S_STARTHOMING:(*開始回SENSOR原點*)
+					FB_TouchProbe(AxisIdx:=idx);(*開始抓SENSOR原點位置*)
+					AxisValue[idx].Jog_JogForward := TRUE;(*正向往原點方向移動*)
+					AxisValue[idx].Jog_Mode		     := MC_JOGMODE_CONTINOUS;
+					AxisValue[idx].Jog_Velocity		     := HomingST[idx].ZRTSpeed;(*歸零速度要使用變速*)
+					HomingState[idx] := S_RESET;
+				S_RESET:(*到達SENSOR原點急停*)
+					IF AxisTouchProbe[idx].RecordPosition <> 0 THEN(*抓到原點表示走到*)
+						Trig1[idx](CLK:= TRUE);
+						Axis[idx].fbMC_Reset(
+							Execute:=Trig1[idx].Q,
+							Axis:=Axis[idx].Axis
+						);
+						AxisValue[idx].Jog_JogForward:= FALSE;
+						IF Axis[idx].fbMC_Reset.Done = TRUE THEN
+							Trig1[idx](CLK:=FALSE);
+							HomingState[idx] := S_DELAYFORSTOP;
+						END_IF
+					END_IF
+				S_DELAYFORSTOP:(*等待軸確實停止*)
+					PosNear(AxisIdx:=idx, Offset:=5, IsNear=>PosIsNear);
+					IF PosIsNear = TRUE THEN
+						PosIsNear := FALSE;
+						HomingState[idx] := S_MOVETONEWZERO;
+					END_IF
+				S_MOVETONEWZERO:(*移動到新設原點*)
+					Trig2[idx](CLK:= TRUE);
+					IF Trig2[idx].Q = TRUE THEN
+						GetActPos(Enable:=TRUE, Axis:=Axis[idx].Axis, Position=>ActPos);
+						MoveDis := AxisTouchProbe[idx].RecordPosition -  ActPos + HomingST[idx].ZRTSet ;(*要再加上新設原點位置*)
+						RelativeMOVE(
+							MoveAxisIdx		:= idx,
+							MoveDistance	:= MoveDis,
+							MoveVelocity		:= HomingST[idx].ZRTSpeed
+						);
+					END_IF
+					IF Axis[idx].fbMC_MoveRelative[1].Done = TRUE THEN
+						Trig2[idx](CLK:=FALSE);
+						HomingState[idx] := S_DELAYFORSTOP2;
+					END_IF
+				S_DELAYFORSTOP2:(*等待移動確實停止*)
+					PosNear(AxisIdx:=idx, Offset:=2, IsNear=>PosIsNear);
+					IF PosIsNear = TRUE THEN
+						PosIsNear := FALSE;
+						HomingState[idx] := S_SETPOSITION;
+					END_IF
+				S_SETPOSITION:(*將新設原點位置設成0*)
+					GetActPos(Enable:=TRUE, Axis:=Axis[idx].Axis, Position=>ActPos);
+					Trig3[idx](CLK:=TRUE);
+					IF Trig3[idx].Q = TRUE THEN
+						Axis[idx].fbMC_SetPosition(
+							Execute	:= Trig3[idx].Q,
+							Position	:= 0,
+							Axis		:= Axis[idx].Axis
+						);
+					END_IF
+					IF Axis[idx].fbMC_SetPosition.Done = TRUE THEN
+						Trig3[idx](CLK:=FALSE);
+						HomingState[idx] := S_HOMINGCOMPLETE;
+					END_IF
+				S_HOMINGCOMPLETE:(*歸零完成*)
+					(*------------------------初始化-------------------------*)
+					HomingStart[idx] 	:= FALSE;
+					(*-----------------------------------------------------------*)
+			END_CASE;
+	
+		END_IF
+	END_FOR
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="HomeByTouchProbe">
+      <LineId Id="22" Count="98" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

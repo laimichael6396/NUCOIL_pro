@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_AnaInput" Id="{59b6d57f-9d01-44be-955e-14443f8f06c5}">
+    <Declaration><![CDATA[TYPE ST_AnaInput :
+STRUCT
+	Input	: ARRAY[0..3] OF INT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

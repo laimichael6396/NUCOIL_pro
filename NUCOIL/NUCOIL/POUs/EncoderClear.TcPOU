@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="EncoderClear" Id="{9579151e-ffa8-4388-ae81-a16ef22ed2f6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EncoderClear
+VAR
+	Run		: BOOL:=FALSE;
+	ClearAxis: ARRAY [1..No] OF BOOL;
+
+	EnCLr	: FB_EncoderClear;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Run THEN
+	EnCLr(ClearAxis := ClearAxis);
+	IF EnClr.Busy = FALSE THEN
+		Run := FALSE;
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="EncoderClear">
+      <LineId Id="7" Count="5" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

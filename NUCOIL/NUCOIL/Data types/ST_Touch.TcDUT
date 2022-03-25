@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_Touch" Id="{bd44faf0-7ab9-4148-bb32-4e65dabf7009}">
+    <Declaration><![CDATA[TYPE ST_Touch :
+STRUCT
+	TouchTime		: UDINT;
+	CurTime			: UDINT;
+	Enable			: BOOL;
+	Miss			: BOOL;
+	boolbuf1			: BOOL;
+	boolbuf2			: BOOL;
+	boolbuf3			: BOOL;
+	boolbuf4			: BOOL;
+	boolbuf5			: BOOL;
+	boolbuf6			: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

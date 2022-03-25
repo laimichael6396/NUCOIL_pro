@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_OneLineAir" Id="{0a327338-c4dd-493a-b39c-4a70188ab62f}">
+    <Declaration><![CDATA[TYPE ST_OneLineAir :
+STRUCT
+	Air	: ARRAY [1..AirNo] OF INT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

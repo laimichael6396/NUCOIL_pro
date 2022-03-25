@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_OIL" Id="{d2a5e917-887b-4732-a0e8-72df4cb5200c}">
+    <Declaration><![CDATA[TYPE ST_OIL :
+STRUCT
+	OpenTime	: UDINT;
+	CloseTime	: UDINT;
+	CurTime		: UDINT;
+	CloseStrokes : UDINT;
+	CurStrokes 	: UDINT;
+	IsOpen		: BOOL:=FALSE;
+	Enable		: BOOL;
+	boolbuf1		: BOOL;
+	boolbuf2		: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

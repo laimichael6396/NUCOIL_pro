@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="SetMotionFuction" Id="{6f0c87b8-44b3-452b-a069-f3cf79638401}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SetMotionFuction
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	idx 				: INT:=2;
+	AxisRunIdx		: ARRAY [0..MAX_ARRAY] OF INT:=[100(0)];
+	MFIdx			: ARRAY[1..No] OF INT:=[No(1)];
+	SlavePos		: ARRAY[1..No] OF LREAL:=[No(0)];
+	TableNum		: INT:=0;
+	MasterRatio		: LREAL;
+	SlaveRatio		: LREAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[MasterRatio :=360.0/1048576.0/4.0;
+FOR idx := 2 TO No DO
+	WHILE AxisProduce[idx].Dist[AxisRunIdx[idx]] <> 0 DO
+		(*起始位置*)
+		IF (AxisRunIdx[idx] <> 0) AND (AxisProduce[idx].Start[AxisRunIdx[idx]] <> AxisProduce[idx].End[AxisRunIdx[idx]-1]) THEN
+			Cam[idx].MotionFunction[MFIdx[idx]].PointIndex       		 := MFIdx[idx];
+		    	Cam[idx].MotionFunction[MFIdx[idx]].FunctionType     	 := MOTIONFUNCTYPE_POLYNOM5_MM;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].PointType        		 := MOTIONPOINTTYPE_REST;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].RelIndexNextPoint   := 1;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].MasterPos       	 	 := AxisProduce[idx].Start[AxisRunIdx[idx]]*MasterRatio;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].SlavePos         		 :=SlavePos[idx] ;
+			MFIdx[idx]										 := MFIdx[idx] +1;
+		ELSIF AxisRunIdx[idx] = 0 THEN
+			(*主軸0度跟隨也在0度開始*)
+			Cam[idx].MotionFunction[MFIdx[idx]].PointIndex       		 := MFIdx[idx];
+		    	Cam[idx].MotionFunction[MFIdx[idx]].FunctionType     	 := MOTIONFUNCTYPE_POLYNOM5_MM;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].PointType        		 := MOTIONPOINTTYPE_REST;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].RelIndexNextPoint   := 1;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].MasterPos       	 	 :=0;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].SlavePos         		 :=0 ;
+			MFIdx[idx]										 := MFIdx[idx] +1;
+
+			Cam[idx].MotionFunction[MFIdx[idx]].PointIndex       		 := MFIdx[idx];
+		    	Cam[idx].MotionFunction[MFIdx[idx]].FunctionType     	 := MOTIONFUNCTYPE_POLYNOM5_MM;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].PointType        		 := MOTIONPOINTTYPE_REST;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].RelIndexNextPoint   := 1;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].MasterPos       	 	 := AxisProduce[idx].Start[AxisRunIdx[idx]]*MasterRatio;
+		    	Cam[idx].MotionFunction[MFIdx[idx]].SlavePos         		 :=SlavePos[idx] ;
+			MFIdx[idx]										 := MFIdx[idx] +1;
+		END_IF
+		SlavePos[idx]									 := SlavePos[idx] + AxisProduce[idx].Dist[AxisRunIdx[idx]] ;
+		(*結束位置*)
+		Cam[idx].MotionFunction[MFIdx[idx]].PointIndex       		 := MFIdx[idx];
+	    	Cam[idx].MotionFunction[MFIdx[idx]].FunctionType     	 := MOTIONFUNCTYPE_POLYNOM5_MM;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].PointType        		 := MOTIONPOINTTYPE_REST;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].RelIndexNextPoint   := 1;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].MasterPos       	 	 := AxisProduce[idx].End[AxisRunIdx[idx]]*MasterRatio;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].SlavePos         		 :=SlavePos[idx] ;
+
+		MFIdx[idx]										 := MFIdx[idx] +1;
+		AxisRunIdx[idx]									 := AxisRunIdx[idx] + 1;
+	END_WHILE
+
+	(*不是在360度結束*)
+	IF Cam[idx].MotionFunction[MFIdx[idx]].MasterPos <360 THEN
+		Cam[idx].MotionFunction[MFIdx[idx]].PointIndex       		 := MFIdx[idx];
+	    	Cam[idx].MotionFunction[MFIdx[idx]].FunctionType     	 := MOTIONFUNCTYPE_POLYNOM5_MM;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].PointType        		 := MOTIONPOINTTYPE_REST;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].RelIndexNextPoint   := 0;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].MasterPos       	 	 := 360;
+	    	Cam[idx].MotionFunction[MFIdx[idx]].SlavePos         		 := 0 ;
+		MFIdx[idx]										 := MFIdx[idx] +1;
+	END_IF
+
+
+	AxisRunIdx[idx] 										 := AxisRunIdx[idx] - 1;
+	MFIdx[idx]											 := MFIdx[idx] - 1;
+	Cam[idx].MotionFunction[MFIdx[idx]].RelIndexNextPoint  		 := 0;(*最後的下一個點設0*)
+
+	Cam[idx].Table.pArray			:= ADR( Cam[idx].MotionFunction );
+	Cam[idx].Table.ArraySize		:= SIZEOF(Cam[idx].MotionFunction );
+	Cam[idx].Table.TableType 		:= MC_TABLETYPE_MOTIONFUNCTION;
+	Cam[idx].Table.NoOfRows		:= MFIdx[idx];
+	Cam[idx].Table.NoOfColumns	:= 1;
+
+
+END_FOR
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="SetMotionFuction">
+      <LineId Id="14" Count="68" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

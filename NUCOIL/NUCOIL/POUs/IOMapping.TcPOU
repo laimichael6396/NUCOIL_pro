@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="IOMapping" Id="{5f834bba-0203-4c35-8067-fa63194f552f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM IOMapping
+VAR
+	idx						: INT:=1;
+	Outputidx1				: INT:=1;
+	Outputidx2				: INT:=1;
+	NormalCtrlPowerOffTimer	: TON;
+	ForceCtrlPowerOffTimer	: TON;
+	UIShutDownTimer  		: TON;
+	CtrlPowerOffTimer 		: TON;
+	PowerOffLCnt			: INT;
+	ForceCtrlPowerOff		: BOOL;
+	NormalCtrlPowerOff		: BOOL;
+	CheckTimer				: TON;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*-----------------------------------Output1------------------------------------*)
+(*三色警示燈*)
+DigOutSlave[1].Output[1] := LightOGR[1];
+DigOutSlave[1].Output[2] := LightOGR[2];
+(*大電開關*)
+DigOutSlave[1].Output[3] := BigPowerSwitch;
+(*線架加速*)
+DigOutSlave[1].Output[4] := ExFeederSpeedUp;
+(*蜂鳴器*)
+DigOutSlave[1].Output[5] := BuzzerIsOpen;
+(*油機*)
+DigOutSlave[1].Output[6] := Oil[1].IsOpen;
+(*DigOutSlave[1].Output[7]:=;*)
+DigOutSlave[1].Output[8] := ForceCtrlPowerOff OR NormalCtrlPowerOff;
+DigOutSlave[1].Output[9] := LightOGR[3];
+
+(*-----------------------------------Output2------------------------------------*)
+(*汽缸*)
+DigOutSlave[2].Output[1] := AirIsOpen[1];
+DigOutSlave[2].Output[2] := AirIsOpen[2];
+DigOutSlave[2].Output[3] := AirIsOpen[3];
+DigOutSlave[2].Output[4] := AirIsOpen[4];
+DigOutSlave[2].Output[5] := AirIsOpen[5];
+DigOutSlave[2].Output[6] := AirIsOpen[6];
+DigOutSlave[2].Output[7] := AirIsOpen[7];
+DigOutSlave[2].Output[8] := AirIsOpen[8];
+DigOutSlave[2].Output[9] := AirIsOpen[9];
+DigOutSlave[2].Output[10] := AirIsOpen[10];
+DigOutSlave[2].Output[11] := AirIsOpen[11];
+DigOutSlave[2].Output[12] := AirIsOpen[12];
+DigOutSlave[2].Output[13] := FAlarmReset;
+(*DigOutSlave[2].Output[14] := *)
+DigOutSlave[2].Output[15] := FServoOn;
+
+(*-----------------------------------Output3------------------------------------*)
+DigOutSlave[3].Output[1] := IOSwitch.SafetyLockDisable;
+(*
+DigOutSlave[3].Output[2] := 
+DigOutSlave[3].Output[3] := 
+DigOutSlave[3].Output[4] := 
+DigOutSlave[3].Output[5] := 
+DigOutSlave[3].Output[6] := 
+DigOutSlave[3].Output[7] := 
+DigOutSlave[3].Output[8] := 
+DigOutSlave[3].Output[9] := 
+DigOutSlave[3].Output[10] :=
+DigOutSlave[3].Output[11] :=
+DigOutSlave[3].Output[12] :=
+DigOutSlave[3].Output[13] :=
+DigOutSlave[3].Output[14] :=
+DigOutSlave[3].Output[15] :=
+*)
+
+(*-------------------------------------Input1--------------------------------------*)
+Inputstate.PowerOff   		 :=  DigInSlave[1].Input[1];
+Inputstate.Reset			 :=  DigInSlave[1].Input[2];
+Inputstate.Producing		 :=  DigInSlave[1].Input[3];
+Inputstate.Testing			 :=  DigInSlave[1].Input[4];
+Inputstate.EditLock		 	 :=  DigInSlave[1].Input[5];
+Inputstate.ExFeederError	 :=  DigInSlave[1].Input[6];
+Inputstate.SafetyError		 :=  DigInSlave[1].Input[7];
+Inputstate.OilError			 :=  DigInSlave[1].Input[8];
+Inputstate.VRSwitch		 	 :=  DigInSlave[1].Input[9];
+Inputstate.EMGStop		 	 :=  DigInSlave[1].Input[10];
+Inputstate.HomeA			 :=  DigInSlave[1].Input[11];
+Inputstate.plusA			 :=  DigInSlave[1].Input[12];
+Inputstate.negA			 	 :=  DigInSlave[1].Input[13];
+Inputstate.plusY			 :=  DigInSlave[1].Input[14];
+Inputstate.negY				 :=  DigInSlave[1].Input[15];
+Inputstate.SW				 :=  DigInSlave[1].Input[16];
+
+
+(*-------------------------------------Input2--------------------------------------*)
+Inputstate.Touch1   		 :=  DigInSlave[2].Input[1];
+Inputstate.Touch2			 :=  DigInSlave[2].Input[2];
+Inputstate.Touch3			 :=  DigInSlave[2].Input[3];
+Inputstate.Touch4			 :=  DigInSlave[2].Input[4];
+Inputstate.StopCycle		 :=  DigInSlave[2].Input[5];
+Inputstate.ExDeviceError	 :=  DigInSlave[2].Input[6];
+
+Inputstate.FAlarm_1370		 := DigInSlave[2].Input[9];
+Inputstate.PowerBit1		 := DigInSlave[2].Input[10];
+Inputstate.PowerBit0		 := DigInSlave[2].Input[11];
+
+Inputstate.ChoiceAxisBit4	 := DigInSlave[2].Input[12];
+Inputstate.ChoiceAxisBit3	 := DigInSlave[2].Input[13];
+Inputstate.ChoiceAxisBit2	 := DigInSlave[2].Input[14];
+Inputstate.ChoiceAxisBit1	 := DigInSlave[2].Input[15];
+Inputstate.ChoiceAxisBit0	 := DigInSlave[2].Input[16];
+
+(*-------------------------------------Input3--------------------------------------*)
+Inputstate.NG		   		 :=  DigInSlave[3].Input[1];
+Inputstate.Mpg_PositiveBtn	 :=  DigInSlave[3].Input[2];
+Inputstate.Mpg_NegativeBtn	 :=  DigInSlave[3].Input[3];
+Inputstate.Zrt				 :=  DigInSlave[3].Input[4];
+
+(*:=  DigInSlave[3].Input[5];
+:=  DigInSlave[3].Input[4];
+:=  DigInSlave[3].Input[5];
+:=  DigInSlave[3].Input[6];
+:=  DigInSlave[3].Input[7];
+:=  DigInSlave[3].Input[8];
+:=  DigInSlave[3].Input[9];
+:=  DigInSlave[3].Input[10];
+:=  DigInSlave[3].Input[11];
+:=  DigInSlave[3].Input[12];
+:=  DigInSlave[3].Input[13];
+:=  DigInSlave[3].Input[14];
+:=  DigInSlave[3].Input[15];
+:=  DigInSlave[3].Input[16];
+*)
+
+(*-------------------------------------Input4--------------------------------------*)
+IF MachineSubType = MachineSubTypeEnum.CE THEN
+	Inputstate.SafetyError1   	 := DigInSlave[4].Input[1];
+	Inputstate.SafetyError2		 := DigInSlave[4].Input[2];
+	Inputstate.SafetyError3		 := DigInSlave[4].Input[3];
+	Inputstate.SafetyError4		 := DigInSlave[4].Input[4];
+	Inputstate.FrontEStop		 := DigInSlave[4].Input[5];
+	Inputstate.SideEStop	     := DigInSlave[4].Input[6];
+	Inputstate.RearEStop		 := DigInSlave[4].Input[7];
+	Inputstate.DecoilorEStop	 := DigInSlave[4].Input[8];
+END_IF
+(*
+ :=  DigInSlave[4].Input[9];
+ :=  DigInSlave[4].Input[10];
+ :=  DigInSlave[4].Input[11];
+ :=  DigInSlave[4].Input[12];
+ :=  DigInSlave[4].Input[13];
+ :=  DigInSlave[4].Input[14];
+ :=  DigInSlave[4].Input[15];
+ :=  DigInSlave[4].Input[16];
+ *)
+
+(*--------------------------PowerOff--------------------------------*)
+PowerOffFunc();
+(*--------------------------ConnectionCheck--------------------------------*)
+ConnectionCheck();
+(*--------------------------LatchAlarmInput--------------------------------*)
+LatchAlarmInput();
+]]></ST>
+    </Implementation>
+    <Action Name="ConnectionCheck" Id="{ad7d43a8-9079-46a9-ab9e-8733ef7f8d6e}">
+      <Implementation>
+        <ST><![CDATA[IF NOT IsDebugMode THEN
+    CheckTimer(IN:= TRUE, PT:= T#5s);
+    IF IsConnecting THEN
+        IF RoutinCheck THEN
+            CheckTimer(IN:= FALSE);
+            RoutinCheck := FALSE;
+        ELSE
+            IF CheckTimer.Q THEN
+                IsConnecting := FALSE;
+            END_IF
+        END_IF
+    END_IF
+ELSE
+	CheckTimer(IN:= FALSE);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="LatchAlarmInput" Id="{eabd2462-bab7-4878-91de-06da8d873293}">
+      <Implementation>
+        <ST><![CDATA[AlarmList.Reset         := NOT AlarmListClear AND SEL(Inputstate.Reset , AlarmList.Reset, TRUE);
+AlarmList.OilError      := NOT AlarmListClear AND SEL(Inputstate.OilError , AlarmList.OilError, TRUE);
+AlarmList.EMGStop       := NOT AlarmListClear AND SEL(Inputstate.EMGStop , AlarmList.EMGStop, TRUE);
+AlarmList.FAlarm_1370   := NOT AlarmListClear AND SEL(Inputstate.FAlarm_1370 , AlarmList.FAlarm_1370, TRUE);
+AlarmList.ExDeviceError := NOT AlarmListClear AND SEL(Inputstate.ExDeviceError , AlarmList.ExDeviceError, TRUE);
+
+AlarmList.NG            := NOT AlarmListClear AND SEL(Inputstate.NG     , AlarmList.NG, TRUE);
+
+AlarmList.SafetyError   := NOT AlarmListClear AND SEL(Inputstate.SafetyError  AND IOSwitch.SaftyEnable AND State <> ENUMSTATE.S_AUTO AND State <> ENUMSTATE.S_TEST AND State <> ENUMSTATE.S_MPG, AlarmList.SafetyError, TRUE);
+AlarmList.SafetyError1  := NOT AlarmListClear AND SEL(Inputstate.SafetyError1 AND IOSwitch.SaftyEnable AND State <> ENUMSTATE.S_AUTO AND State <> ENUMSTATE.S_TEST AND State <> ENUMSTATE.S_MPG, AlarmList.SafetyError1, TRUE);
+AlarmList.SafetyError2  := NOT AlarmListClear AND SEL(Inputstate.SafetyError2 AND IOSwitch.SaftyEnable AND State <> ENUMSTATE.S_AUTO AND State <> ENUMSTATE.S_TEST AND State <> ENUMSTATE.S_MPG, AlarmList.SafetyError2, TRUE);
+AlarmList.SafetyError3  := NOT AlarmListClear AND SEL(Inputstate.SafetyError3 AND IOSwitch.SaftyEnable AND State <> ENUMSTATE.S_AUTO AND State <> ENUMSTATE.S_TEST AND State <> ENUMSTATE.S_MPG, AlarmList.SafetyError3, TRUE);
+AlarmList.SafetyError4  := NOT AlarmListClear AND SEL(Inputstate.SafetyError4 AND IOSwitch.SaftyEnable AND State <> ENUMSTATE.S_AUTO AND State <> ENUMSTATE.S_TEST AND State <> ENUMSTATE.S_MPG, AlarmList.SafetyError4, TRUE);
+
+AlarmList.PanelEStop    := NOT AlarmListClear AND SEL(Inputstate.PanelEStop     , AlarmList.PanelEStop, TRUE);
+AlarmList.FrontEStop    := NOT AlarmListClear AND SEL(Inputstate.FrontEStop     , AlarmList.FrontEStop, TRUE);
+AlarmList.SideEStop     := NOT AlarmListClear AND SEL(Inputstate.SideEStop      , AlarmList.SideEStop, TRUE);
+AlarmList.RearEStop     := NOT AlarmListClear AND SEL(Inputstate.RearEStop      , AlarmList.RearEStop, TRUE);
+AlarmList.DecoilorEStop := NOT AlarmListClear AND SEL(Inputstate.DecoilorEStop  , AlarmList.DecoilorEStop, TRUE);
+
+AlarmList.ExFeederError := NOT AlarmListClear AND SEL(Inputstate.ExFeederError AND State <> ENUMSTATE.S_AUTO AND State <> ENUMSTATE.S_TEST AND State <> ENUMSTATE.S_MPG, AlarmList.ExFeederError, TRUE);
+
+
+AlarmListClear := FALSE;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="PowerOffFunc" Id="{b8c77b5c-b90f-44a5-b190-45101b4c4ac1}">
+      <Implementation>
+        <ST><![CDATA[IF Inputstate.PowerOff THEN
+	NormalCtrlPowerOffTimer(IN:= TRUE,PT:= T#200ms );
+	ForceCtrlPowerOffTimer(IN:= TRUE,PT:= T#3000ms );
+	IF ForceCtrlPowerOffTimer.Q THEN
+        BigPowerSwitch    :=FALSE;
+		InPowerOffProcess :=TRUE;
+		ForceCtrlPowerOff :=TRUE;
+	END_IF
+ELSE
+	IF NormalCtrlPowerOffTimer.Q THEN
+		InPowerOffProcess := TRUE;
+	END_IF
+
+	IF  InPowerOffProcess THEN
+
+		BigPowerSwitch :=FALSE;    	
+		UIShutDownTimer(IN:= TRUE, PT:= T#1000ms);
+
+		IF UIShutDownTimer.Q THEN
+			PLCToUIShutDown := TRUE;
+
+			IF PowerOffCnt <> PowerOffLCnt THEN
+				PowerOffLCnt := PowerOffCnt;				
+			ELSIF PowerOffCnt = PowerOffLCnt THEN
+				CtrlPowerOffTimer(IN:= TRUE,PT:= T#1000ms );
+				IF CtrlPowerOffTimer.Q THEN
+					NormalCtrlPowerOff :=TRUE;
+				END_IF
+			END_IF
+
+		END_IF
+	ELSE
+		BigPowerSwitch	   :=TRUE;
+		PLCToUIShutDown	   :=FALSE;
+		NormalCtrlPowerOff :=FALSE;
+		ForceCtrlPowerOff  :=FALSE;
+		UIShutDownTimer(IN:= FALSE);
+		CtrlPowerOffTimer(IN:= FALSE);
+	END_IF
+	NormalCtrlPowerOffTimer(IN:= FALSE);
+	ForceCtrlPowerOffTimer(IN:= FALSE);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="IOMapping">
+      <LineId Id="14" Count="140" />
+    </LineIds>
+    <LineIds Name="IOMapping.ConnectionCheck">
+      <LineId Id="16" Count="13" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="IOMapping.LatchAlarmInput">
+      <LineId Id="0" Count="23" />
+    </LineIds>
+    <LineIds Name="IOMapping.PowerOffFunc">
+      <LineId Id="0" Count="41" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

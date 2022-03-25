@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_EcAbnormal" Id="{5928d191-8a79-4025-8575-d17a4a55170f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_EcAbnormal
+VAR_INPUT
+
+END_VAR
+VAR_OUTPUT
+	Abnormal	   :BOOL;
+END_VAR
+VAR
+    idx            :INT;
+    paxis          :INT;
+    useCU1128      :BOOL;
+    DriveInfoData  :ARRAY [1..No] OF UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+paxis    := 1;
+Abnormal := FALSE;
+useCU1128:= FALSE;
+FOR idx:=0 TO MaxSlaves DO
+
+    IF SlaveConfigData[idx].sType = 'CU1128' THEN
+        useCU1128 := TRUE;
+    END_IF
+
+    IF SlaveConfigData[idx].sType = 'SanyoDenki RS2 ' OR SlaveConfigData[idx].sType = 'SGD7S-xxxxA0x C' THEN
+
+        IF paxis <= No THEN
+            DriveInfoData[paxis] := SlaveEcInfoData[idx];
+            IF DriveInfoData[paxis] > 8 THEN
+                IF (MachineType = MachineTypeEnum._1020 AND paxis > 10) OR paxis > 11 THEN (* 表示已經是CU1128/標準11軸 後面的軸都當作是Extension軸 *)
+                    IF AxisIsOn[paxis] THEN
+                        IF ((UINT_TO_WORD(DriveInfoData[paxis]) AND 16#2200) = 16#2200) OR
+                        ((UINT_TO_WORD(DriveInfoData[paxis]) AND 16#2400) = 16#2400)
+                        THEN
+                            ;
+                        ELSE
+                            Abnormal := TRUE;
+                        END_IF
+                    END_IF
+                ELSE
+                    Abnormal := TRUE;
+                END_IF
+            END_IF            
+        END_IF
+        paxis := paxis + 1;
+
+    ELSE
+        IF SlaveEcInfoData[idx] > 8
+        AND SlaveConfigData[idx].sType <> 'CU1128'
+		AND SlaveConfigData[idx].sType <> 'CU1128-B'
+		AND SlaveConfigData[idx].sType <> 'CU1128-C'
+		THEN
+            Abnormal := TRUE;
+        END_IF
+
+    END_IF
+
+END_FOR]]></ST>
+    </Implementation>
+    <LineIds Name="FB_EcAbnormal">
+      <LineId Id="14" Count="43" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

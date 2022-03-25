@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="MANMOVEENUM" Id="{b1cee0ab-dff8-496f-858a-f4ff0e6080bb}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE 
+	MANMOVEENUM	: (S_MANINITIAL, S_MANMOVE, S_MOVESTOP);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

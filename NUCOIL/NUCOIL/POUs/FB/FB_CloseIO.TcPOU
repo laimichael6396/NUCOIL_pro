@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_CloseIO" Id="{85e66412-8b54-4367-86fb-f00f9f1f2bad}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_CloseIO
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	idx				: INT:=1;
+	CloseAir			: FB_CloseAir;
+	CloseOil			: FB_CloseOil;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR idx:=1 TO TouchNo DO
+	Touch[idx].CurTime := 0;
+END_FOR
+
+CloseAir();
+
+CloseOil();
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_CloseIO">
+      <LineId Id="10" Count="7" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

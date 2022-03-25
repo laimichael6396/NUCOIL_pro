@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_McValue" Id="{e9235ac3-5f01-4eb4-a4b7-f22498732c52}">
+    <Declaration><![CDATA[TYPE ST_McValue :
+STRUCT
+	Pos_360				: LREAL := 0;
+
+	MoveExecute			:ARRAY [1..2] OF BOOL;
+	MoveDistance		:ARRAY [1..2] OF LREAL;
+	MoveVelocity			:ARRAY [1..2] OF LREAL;
+	MoveAcceleration		:ARRAY [1..2] OF LREAL;
+	MoveDeceleration		:ARRAY [1..2] OF LREAL;
+	MoveJerk			:ARRAY [1..2] OF LREAL;
+
+	Jog_JogForward		:BOOL;
+	Jog_JogBackwards	:BOOL;
+	Jog_Mode			:E_JogMode;
+	Jog_Position			:LREAL;
+	Jog_Velocity			:LREAL;
+	Jog_Acceleration		:LREAL;
+	Jog_Deceleration		:LREAL;
+	Jog_Jerk			:LREAL;
+
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

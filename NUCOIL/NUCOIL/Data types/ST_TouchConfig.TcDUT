@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_TouchConfig" Id="{158c9e7f-aaa0-4609-8a0f-b1c7f1011162}">
+    <Declaration><![CDATA[TYPE ST_TouchConfig :
+STRUCT
+	StartIdx		: ARRAY[0..999] OF DINT;
+	EndIdx		: ARRAY[0..999] OF DINT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

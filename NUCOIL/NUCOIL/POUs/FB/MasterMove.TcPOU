@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="MasterMove" Id="{d890bfe9-b53a-44dd-929c-9bbbef9d41f0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK MasterMove
+VAR_INPUT
+	MoveDistance		: LREAL;
+	MoveVelocity			: LREAL;
+	MoveAcceleration		: LREAL;
+	MoveDeceleration		: LREAL;
+	MoveJerk			: LREAL;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+Master.fbMC_MoveRelative[1](
+	Execute  		:= TRUE,
+	Distance		:= MoveDistance,
+	Velocity  		:= MoveVelocity,
+	Acceleration   := MoveAcceleration,
+	Deceleration  := MoveDeceleration,
+	Jerk			:= MoveJerk,
+	BufferMode     := MC_BlendingHigh,
+	Axis			:= Master.Axis
+);
+
+Master.fbMC_MoveRelative[1](
+	Execute  		:= FALSE,
+	Axis			:= Master.Axis
+);]]></ST>
+    </Implementation>
+    <LineIds Name="MasterMove">
+      <LineId Id="12" Count="15" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

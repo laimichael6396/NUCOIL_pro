@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="Mpg" Id="{27beba5f-ec6b-488b-b007-8fd84ab1690d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Mpg
+VAR
+	Value			: UINT;
+	Count			: INT:=0;
+	Count50MS		: INT:=0;
+	CountP 			: INT:=0;
+	CountN 			: INT:=0;
+	CountStop		: INT:=0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Count = 0 THEN
+	Count := 1;
+	Value :=  EL5101SlaveValue;
+END_IF
+
+Count50MS := Count50MS + 1;
+
+IF Count50MS = 5 THEN
+	Count50MS := 0;
+	IF UINT_TO_INT( EL5101SlaveValue - Value) > 3 THEN
+		CountP := CountP + 1;
+		Value := EL5101SlaveValue;
+		Mpg_NegativeMove := FALSE;
+		Mpg_PositiveMove := TRUE;
+	ELSIF UINT_TO_INT( EL5101SlaveValue - Value) < -3 THEN
+		CountN := CountN + 1;
+		Value :=  EL5101SlaveValue;
+		Mpg_PositiveMove := FALSE;
+		Mpg_NegativeMove := TRUE;
+	ELSE
+		CountStop := CountStop + 1;
+		Mpg_PositiveMove   := FALSE;
+		Mpg_NegativeMove := FALSE;
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="Mpg">
+      <LineId Id="9" Count="24" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

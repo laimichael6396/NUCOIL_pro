@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="SetPositionTable" Id="{424da2ec-e9f0-430d-a78f-44156f0a6723}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SetPositionTable
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	idx 				: INT:=2;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+FOR idx := 1 TO No DO
+	Cam[idx].Table.pArray			:= ADR( CamTable1[idx].PositionTable );
+	Cam[idx].Table.ArraySize		:= SIZEOF(CamTable1[idx].PositionTable );
+	Cam[idx].Table.TableType	 	:= MC_TABLETYPE_EQUIDISTANT;
+	Cam[idx].Table.NoOfRows		:= CamTable1[idx].NoOfRows;
+	Cam[idx].Table.NoOfColumns	:= 2;
+
+	Cam[idx].Table2.pArray		:= ADR( CamTable2[idx].PositionTable );
+	Cam[idx].Table2.ArraySize		:= SIZEOF(CamTable2[idx].PositionTable );
+	Cam[idx].Table2.TableType 	:= MC_TABLETYPE_EQUIDISTANT;
+	Cam[idx].Table2.NoOfRows		:= CamTable2[idx].NoOfRows;
+	Cam[idx].Table2.NoOfColumns	:= 2;
+
+END_FOR
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="SetPositionTable">
+      <LineId Id="8" Count="17" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

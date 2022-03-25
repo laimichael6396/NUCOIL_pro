@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_G5Status" Id="{383933c6-9127-4a3f-97ae-db9c5abb0443}">
+    <Declaration><![CDATA[TYPE ST_G5Status :
+STRUCT
+	CurIdx				:INT;
+	CurTimes			:INT;
+	ATimeFIdx			:INT;
+	ATimeSubNo			:INT;
+	JumpFirstTime 		:BOOL;
+	ATimeTouchConfigIdx	: ARRAY [1..TouchNo] OF INT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

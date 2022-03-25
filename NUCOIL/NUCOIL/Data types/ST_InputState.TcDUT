@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_InputState" Id="{27ae3d43-3231-445b-a293-efba5dd4e088}">
+    <Declaration><![CDATA[TYPE ST_InputState :
+STRUCT
+(*-------------------------------------Input1--------------------------------------*)
+	PowerOff		:BOOL;
+	Reset		    :BOOL;
+	Producing		:BOOL;
+	Testing			:BOOL;
+	EditLock		:BOOL;
+	ExFeederError	:BOOL;
+	SafetyError		:BOOL;
+	OilError		:BOOL;
+	VRSwitch		:BOOL;
+	EMGStop			:BOOL;
+	HomeA			:BOOL;
+	plusA			:BOOL;
+	negA			:BOOL;
+	plusY			:BOOL;
+	negY			:BOOL;
+	SW				:BOOL;
+
+(*-------------------------------------Input2--------------------------------------*)
+	Touch1			:BOOL;
+	Touch2			:BOOL;
+	Touch3			:BOOL;
+	Touch4			:BOOL;
+	StopCycle		:BOOL;
+	ExDeviceError	:BOOL;
+	PowerBit0		:BOOL;
+	PowerBit1		:BOOL;
+	ChoiceAxisBit0	:BOOL;
+	ChoiceAxisBit1	:BOOL;
+	ChoiceAxisBit2	:BOOL;
+	ChoiceAxisBit3	:BOOL;
+	ChoiceAxisBit4	:BOOL;
+	FAlarm_1370		:BOOL;
+	
+(*-------------------------------------Input3--------------------------------------*)
+	NG				:BOOL;
+	Mpg_PositiveBtn	:BOOL;
+	Mpg_NegativeBtn	:BOOL;
+	Zrt				:BOOL;
+
+(*-------------------------------------Input4--------------------------------------*)
+	SafetyError1	:BOOL;
+	SafetyError2	:BOOL;
+	SafetyError3	:BOOL;
+	SafetyError4	:BOOL;
+	PanelEStop		:BOOL;
+	FrontEStop		:BOOL;
+	SideEStop		:BOOL;
+	RearEStop		:BOOL;
+	DecoilorEStop   :BOOL;
+
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_OneLineTable" Id="{fdd43b2e-2bcd-4628-bfcc-fe9e727b1835}">
+    <Declaration><![CDATA[TYPE ST_OneLineTable :
+STRUCT
+	Dist		: ARRAY [1..No] OF LREAL;
+	Velocity   : ARRAY [1..No] OF LREAL;
+	Acc		: ARRAY [1..No] OF LREAL;
+	Dec		: ARRAY [1..No] OF LREAL;
+	Jerk		: ARRAY [1..No] OF LREAL;
+	Delay	: LREAL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

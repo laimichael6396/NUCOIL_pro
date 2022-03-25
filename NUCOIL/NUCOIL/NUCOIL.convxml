@@ -1,0 +1,787 @@
+<?xml version="1.0"?>
+<VarLinks>
+	<OwnerA Name="InputDst" Type="1" ConvertedFromTc2="true">
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="DigInSlave[1]^Input[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="DigInSlave[2]^Input[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="DigInSlave[3]^Input[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="DigInSlave[4]^Input[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Input" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 10 (EL5101)">
+			<Link VarA="EL5101SlaveValue" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="ENC Status compact^Counter value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 9 (EL3062-0030)">
+			<Link VarA="EL3062_VR" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="AI Standard Channel 1^Value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive1 X1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[1]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive2 X2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[2]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive3 X3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[3]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive4 X4  (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[4]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive5 X5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[5]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive6 X6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[6]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive7 X7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[7]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive8 X8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[8]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive9 RW (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[9]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive10 F (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[10]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive11 RQ (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[11]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive12 Extend1-1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[12]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive13 Extend1-2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[13]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive14 Extend1-3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[14]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive15 Extend1-4 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[15]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive16 Extend1-5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[16]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive17 Extend1-6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[17]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive18 Extend1-7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[18]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive19 Extend1-8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxisCountPosByInput[19]" GuidA="{18071995-0000-0000-0000-000000000009}" VarB="Inputs_1^Position actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive1 X1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[1]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive1 X1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[1]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive2 X2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[2]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive2 X2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[2]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive3 X3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[3]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive3 X3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[3]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive4 X4  (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[4]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive4 X4  (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[4]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive5 X5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[5]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive5 X5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[5]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive6 X6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[6]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive6 X6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[6]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive7 X7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[7]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive7 X7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[7]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive8 X8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[8]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive8 X8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[8]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive9 RW (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[9]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive9 RW (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[9]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive10 F (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[10]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive10 F (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[10]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive11 RQ (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[11]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive11 RQ (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[11]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive12 Extend1-1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[12]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive12 Extend1-1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[12]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive13 Extend1-2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[13]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive13 Extend1-2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[13]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive14 Extend1-3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[14]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive14 Extend1-3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[14]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive15 Extend1-4 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[15]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive15 Extend1-4 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[15]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive16 Extend1-5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[16]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive16 Extend1-5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[16]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive17 Extend1-6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[17]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive17 Extend1-6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[17]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive18 Extend1-7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[18]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive18 Extend1-7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[18]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive19 Extend1-8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[19]^Error1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive19 Extend1-8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="DriveAlarmCode[19]^Error2" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Inputs_1^Error 2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)">
+			<Link VarA="SlaveEcInfoData[0]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL1889)">
+			<Link VarA="SlaveEcInfoData[1]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL1889)">
+			<Link VarA="SlaveEcInfoData[2]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 4 (EL1889)">
+			<Link VarA="SlaveEcInfoData[3]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 5 (EL1889)">
+			<Link VarA="SlaveEcInfoData[4]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="SlaveEcInfoData[5]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="SlaveEcInfoData[6]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="SlaveEcInfoData[7]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 9 (EL3062-0030)">
+			<Link VarA="SlaveEcInfoData[8]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 10 (EL5101)">
+			<Link VarA="SlaveEcInfoData[9]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 11 (EK1110)">
+			<Link VarA="SlaveEcInfoData[10]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive1 X1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[11]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive2 X2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[12]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive3 X3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[13]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive4 X4  (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[14]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive5 X5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[15]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive6 X6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[16]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive7 X7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[17]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive8 X8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[18]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive9 RW (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[19]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive10 F (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[20]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive11 RQ (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[21]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive12 Extend1-1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[22]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive13 Extend1-2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[23]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive14 Extend1-3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[24]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive15 Extend1-4 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[25]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive16 Extend1-5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[26]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive17 Extend1-6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[27]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive18 Extend1-7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[28]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive19 Extend1-8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="SlaveEcInfoData[29]" GuidA="{18071995-0000-0000-0000-000000000005}" VarB="InfoData^State"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis1 X1">
+			<Link VarA=".Axis[1].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis1 X1_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis2 X2">
+			<Link VarA=".Axis[2].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis2 X2_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis3 X3">
+			<Link VarA=".Axis[3].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis3 X3_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis4 X4">
+			<Link VarA=".Axis[4].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis4 X4_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis5 X5">
+			<Link VarA=".Axis[5].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis5 X5_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis6 X6">
+			<Link VarA=".Axis[6].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis6 X6_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis7 X7">
+			<Link VarA=".Axis[7].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis7 X7_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis8 X8">
+			<Link VarA=".Axis[8].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis8 X8_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis9 RW">
+			<Link VarA=".Axis[9].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis9 RW_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis10 F">
+			<Link VarA=".Axis[10].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis10 F_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis11 RQ">
+			<Link VarA=".Axis[11].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis11 RQ_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis12">
+			<Link VarA=".Axis[12].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis12_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis13">
+			<Link VarA=".Axis[13].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis13_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis14">
+			<Link VarA=".Axis[14].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis14_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis15">
+			<Link VarA=".Axis[15].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis15_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis16">
+			<Link VarA=".Axis[16].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis16_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis17">
+			<Link VarA=".Axis[17].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis17_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis18">
+			<Link VarA=".Axis[18].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis18_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis19">
+			<Link VarA=".Axis[19].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis19_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis20">
+			<Link VarA=".Axis[20].Axis.NcToPlc" GuidA="{CB787B0F-1D3E-B0ED-548B-5D4CC2C0D4DC}" VarB="Outputs^Axis20_ToPlc" Size="1024"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive1 X1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[1]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive2 X2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[2]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive3 X3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[3]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive4 X4  (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[4]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive5 X5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[5]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive6 X6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[6]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive7 X7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[7]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive8 X8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[8]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive9 RW (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[9]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive10 F (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[10]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive11 RQ (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[11]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive12 Extend1-1 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[12]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive13 Extend1-2 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[13]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive14 Extend1-3 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[14]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive15 Extend1-4 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[15]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive16 Extend1-5 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[16]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive17 Extend1-6 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[17]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive18 Extend1-7 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[18]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Drive19 Extend1-8 (SanyoDenki RS2 EtherCAT)">
+			<Link VarA="AxesTorque[19]" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="Inputs^Torque actual value"/>
+		</OwnerB>
+	</OwnerA>
+	<OwnerA Name="OutputSrc" Type="2" ConvertedFromTc2="true">
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL2889)">
+			<Link VarA="DigOutSlave[1]^Output[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 7 (EL2889)">
+			<Link VarA="DigOutSlave[2]^Output[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[1]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 1^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[2]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 2^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[3]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 3^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[4]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 4^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[5]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 5^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[6]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 6^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[7]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 7^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[8]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 8^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[9]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 9^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[10]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 10^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[11]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 11^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[12]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 12^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[13]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 13^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[14]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 14^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[15]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 15^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 8 (EL2889)">
+			<Link VarA="DigOutSlave[3]^Output[16]" GuidA="{18071995-0000-0000-0000-000000000030}" VarB="Channel 16^Output" Size="1"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis1 X1">
+			<Link VarA=".Axis[1].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis1 X1_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis2 X2">
+			<Link VarA=".Axis[2].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis2 X2_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis3 X3">
+			<Link VarA=".Axis[3].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis3 X3_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis4 X4">
+			<Link VarA=".Axis[4].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis4 X4_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis5 X5">
+			<Link VarA=".Axis[5].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis5 X5_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis6 X6">
+			<Link VarA=".Axis[6].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis6 X6_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis7 X7">
+			<Link VarA=".Axis[7].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis7 X7_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis8 X8">
+			<Link VarA=".Axis[8].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis8 X8_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis9 RW">
+			<Link VarA=".Axis[9].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis9 RW_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis10 F">
+			<Link VarA=".Axis[10].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis10 F_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis11 RQ">
+			<Link VarA=".Axis[11].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis11 RQ_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis12">
+			<Link VarA=".Axis[12].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis12_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis13">
+			<Link VarA=".Axis[13].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis13_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis14">
+			<Link VarA=".Axis[14].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis14_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis15">
+			<Link VarA=".Axis[15].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis15_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis16">
+			<Link VarA=".Axis[16].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis16_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis17">
+			<Link VarA=".Axis[17].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis17_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis18">
+			<Link VarA=".Axis[18].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis18_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis19">
+			<Link VarA=".Axis[19].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis19_FromPlc"/>
+		</OwnerB>
+		<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Axis20">
+			<Link VarA=".Axis[20].Axis.PlcToNc" GuidA="{20F4FB6D-04AA-EE86-A6DE-87002E89CCA4}" VarB="Inputs^Axis20_FromPlc"/>
+		</OwnerB>
+	</OwnerA>
+</VarLinks>

@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="AlertLight" Id="{44417619-0746-4f4a-975b-0802a5b96228}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM AlertLight
+VAR
+	Light		: ST_AlertLight;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF state = ENUMSTATE.S_AUTO THEN
+	IF TouchMissStop OR SpeedDownTo0 THEN
+		Light.Red := TRUE;
+	ELSE
+		Light.Green := TRUE;
+	END_IF
+ELSIF state = ENUMSTATE.S_ERROR OR state =  ENUMSTATE.S_TROUBLESHOOT OR state = ENUMSTATE.S_TROSHO_MANMOV OR TouchMissStop OR SpeedDownTo0 THEN
+	Light.Red := TRUE;
+ELSE
+	Light.Orange := TRUE;
+END_IF
+
+IF MachineSubType = MachineSubTypeEnum.CE THEN
+
+	IF Light.Orange THEN
+		LightOGR[1] := TRUE;
+		LightOGR[2] := FALSE;
+		LightOGR[3] := FALSE;
+
+	ELSIF Light.Green THEN
+		LightOGR[1] := FALSE;
+		LightOGR[2] := FALSE;
+		LightOGR[3] := TRUE;
+	
+	ELSIF Light.Red THEN
+		LightOGR[1] := FALSE;
+		LightOGR[2] := TRUE;
+		LightOGR[3] := FALSE;
+
+	END_IF
+
+ELSE
+
+	IF Light.Orange THEN
+		LightOGR[1] := FALSE;
+		LightOGR[2] := FALSE;
+		LightOGR[3] := FALSE;
+
+	ELSIF Light.Green THEN
+		LightOGR[1] := TRUE;
+		LightOGR[2] := FALSE;
+		LightOGR[3] := FALSE;
+	
+	ELSIF Light.Red THEN
+		LightOGR[1] := FALSE;
+		LightOGR[2] := TRUE;
+		LightOGR[3] := FALSE;
+
+	END_IF
+
+END_IF
+
+Light.Orange := FALSE;
+Light.Green := FALSE;
+Light.Red := FALSE;]]></ST>
+    </Implementation>
+    <LineIds Name="AlertLight">
+      <LineId Id="4" Count="54" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_RingBufferIO" Id="{8a449a9f-605c-4e71-b391-6b0cd8a5d15a}">
+    <Declaration><![CDATA[TYPE ST_RingBufferIO :
+STRUCT
+	Table		: ARRAY [0..3599] OF BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

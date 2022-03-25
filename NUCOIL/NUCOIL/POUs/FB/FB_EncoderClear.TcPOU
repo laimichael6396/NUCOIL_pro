@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_EncoderClear" Id="{17097172-3789-4c0e-b889-41b52c8da681}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_EncoderClear
+
+VAR_INPUT
+	ClearAxis	: ARRAY [1..No] OF BOOL;
+END_VAR
+
+VAR_OUTPUT
+	Busy		: BOOL;
+END_VAR
+
+VAR
+	exe			: ARRAY [1..No] OF BOOL;
+	idx			: INT := 1;
+	Value		: UINT := 16#10;
+	Cmdstring	: STRING(16);
+	deltaState	: UINT:=0;
+	EnClrState	: UINT:=0;
+	Timer		:TON;
+	FirstTime	:BOOL:= TRUE;
+	YASKAWAEnClr	: ARRAY [1..No] OF Y_AbsoluteEncoderReset;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF MotorVendor = MotorVenderEnum.SANYO THEN
+	Value := 16#10;
+	FOR Idx := 1 TO No DO
+		IF ClearAxis[idx] = TRUE THEN
+			Axis[idx].fbADSWrite(
+				NETID		:= AmsNetId,
+				PORT		:= 501,
+				IDXGRP		:= 16#F030,
+				IDXOFFS	:= 16#B1 + (idx - 1)*16#D0, (*NC->Axis->Drive->Output->nCtrl1*)
+				LEN			:= 1,
+				SRCADDR 	:= ADR(Value),
+				WRITE		:= TRUE,
+				TMOUT		:=  t#0.5s,
+			);
+		END_IF
+	END_FOR
+
+	Busy := FALSE;
+	FOR idx := 1 TO No DO
+		IF ClearAxis[idx] = TRUE THEN
+			IF  Axis[idx].fbADSWrite.BUSY THEN
+				Busy := TRUE;
+			END_IF
+		END_IF
+	END_FOR
+
+
+ELSIF MotorVendor = MotorVenderEnum.YASKAWA THEN
+
+	Busy := TRUE;
+
+	FOR Idx := 1 TO No DO
+		IF ClearAxis[idx] = TRUE THEN
+			YASKAWAEnClr[idx](
+				bExecute:= TRUE,
+				sNetId:= DeviceNetId,
+				nSlaveAddr:=  1009 + (Idx-1),
+				bDone=> ,
+				bBusy=> ,
+				bError=> ,
+				nErrorID=> );
+		END_IF
+	END_FOR
+
+
+	Timer(IN:= TRUE,PT:= T#500ms );
+	IF Timer.Q THEN
+		Timer(IN:= FALSE);
+		busy := FALSE;
+	END_IF
+
+ELSIF MotorVendor = MotorVenderEnum.DELTA THEN
+(*可利用面版操作或是通訊寫入參數P2-71 為1 建立絕對型原點座標，當P2-71 被寫入1 時，
+絕對系統座標會立刻進行重置。但因參數P2-71 寫入功能受到P2-08 保護，必須先寫入參數
+P2-08 為271，才能順利寫入參數P2-71。因此，參數的輸入順序為P2-08 = 271，然後是
+P2-71 = 1。請注意，此方法只適合PR 以外的模式使用。若是操作在PR 模式，請使用原點
+復歸的程序建立絕對型原點座標。*)
+
+	IF FirstTime THEN
+		FirstTime := FALSE;
+		FOR Idx := 1 TO No DO
+			exe[idx] := TRUE;
+		END_FOR
+	END_IF
+	Busy := TRUE;
+	CASE deltaState OF
+		0:
+			FOR Idx := 1 TO No DO
+				IF ClearAxis[idx] = TRUE THEN
+					Value := 271;
+					Axis[idx].fbSDOWrite(
+						bExecute 	:= exe[idx],
+						sNetId 		:= DeviceNetId,
+						nSlaveAddr 	:= 1009 + (Idx-1),
+						nIndex 		:= 16#2208,
+						nSubIndex 	:= 0,
+						pSrcBuf 		:= ADR(Value),
+						cbBufLen 	:= SIZEOF(Value)
+					);
+					IF NOT Axis[idx].fbSDOWrite.bBusy THEN
+						exe[idx] := FALSE;
+					END_IF
+				END_IF
+			END_FOR
+			Timer(IN:= TRUE,PT:= T#500ms );
+			IF Timer.Q THEN
+				Timer(IN:= FALSE);
+				deltaState := 1;
+				FOR Idx := 1 TO No DO
+					exe[idx] := TRUE;
+				END_FOR
+			END_IF
+		1:
+			FOR Idx := 1 TO No DO
+				IF ClearAxis[idx] = TRUE THEN
+					Value := 1;
+					Axis[idx].fbSDOWrite(
+						bExecute 	:= exe[idx],
+						sNetId 		:= DeviceNetId,
+						nSlaveAddr 	:= 1009 + (Idx-1),
+						nIndex 		:= 16#2247,
+						nSubIndex 	:= 0,
+						pSrcBuf 		:= ADR(Value),
+						cbBufLen 	:= SIZEOF(Value)
+					);
+					IF NOT Axis[idx].fbSDOWrite.bBusy THEN
+						exe[idx] := FALSE;
+					END_IF
+				END_IF
+			END_FOR
+			Timer(IN:= TRUE,PT:= T#500ms );
+			IF Timer.Q THEN
+				Timer(IN:= FALSE);
+				deltaState := 4;
+				FOR Idx := 1 TO No DO
+					exe[idx] := TRUE;
+				END_FOR
+			END_IF
+		4:
+			Busy := FALSE;
+	END_CASE
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_EncoderClear">
+      <LineId Id="21" Count="122" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

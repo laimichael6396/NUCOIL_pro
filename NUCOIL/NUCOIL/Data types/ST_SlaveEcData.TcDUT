@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_SlaveEcData" Id="{74a6fb51-968b-4989-9ab3-b502c2285f75}">
+    <Declaration><![CDATA[TYPE ST_SlaveEcData :
+STRUCT
+	Name	: STRING(31);
+	sType   : STRING(15);
+	InfoData: UINT;
+	PortA	: UDINT;
+	PortB	: UDINT;
+	PortC	: UDINT;
+	PortD	: UDINT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

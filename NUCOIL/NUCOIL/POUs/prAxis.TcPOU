@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="prAxis" Id="{62659392-2224-4fac-af27-af828e1d6898}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM prAxis
+VAR
+	idx				: INT ;
+	RCount1			: UINT:=0;
+	RCount2			: UINT:=0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[aprPowerST();
+aprRelativeST();
+aprRelativeST2();
+aprReadStatusST();
+aprSetPositionST();
+aprJogST();
+aprReadActualPosition();
+aprTouchProbe();
+aprCamIn();
+aprCamOut();
+aprCamTableSelect();
+aprExtSetPointGenerator();]]></ST>
+    </Implementation>
+    <Action Name="aprCamIn" Id="{d7d335fa-1fb0-4202-8ab8-73cd0e4eaddf}">
+      <Implementation>
+        <ST><![CDATA[FOR idx :=1 TO No DO
+	Cam[idx].Scaling.MasterScaling := 1000.0;
+	(*Cam[idx].Scaling.MasterRelative := FALSE;*)
+	Cam[idx].Scaling.MasterScalingMode := MC_CAMSCALING_AUTOOFFSET;
+	Cam[idx].Scaling.SlaveScaling   := 1;
+	(*Cam[idx].Scaling.SlaveRelative   := TRUE;*)
+	Cam[idx].Scaling.SlaveScalingMode := MC_CAMSCALING_AUTOOFFSET;
+	Cam[idx].Options.InterpolationType := MC_INTERPOLATIONTYPE_LINEAR;
+	Cam[idx].Options.CamOperationMode := CAMOPERATIONMODE_EXCHANGE;
+
+	Cam[idx].CamIn(
+		Scaling			:= Cam[idx].Scaling,
+		Options			:= Cam[idx].Options,
+		Master		 	:= Master.Axis,
+		Slave		 	:= Axis[idx].Axis,
+	);
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprCamOut" Id="{055a8de1-9ad9-494e-89de-3bbda3ba225c}">
+      <Implementation>
+        <ST><![CDATA[FOR idx := 1 TO No DO
+	Cam[idx].CamOut(Slave :=  Axis[idx].Axis);
+
+	IF Cam[idx].CamOut.Done = TRUE THEN
+		Cam[idx].CamOut.Execute := FALSE;
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprCamTableSelect" Id="{7df79ac9-8b77-4648-a64f-f1bf4e0e0087}">
+      <Implementation>
+        <ST><![CDATA[FOR idx :=1 TO No DO
+
+	Cam[idx].TableSelect(
+		CamTableID     := idx,
+		Master		   := Master.Axis,
+		Slave		   := Axis[idx].Axis,
+		CamTable	   := Cam[idx].Table
+	);
+
+	Cam[idx].TableSelect2(
+		CamTableID     := idx+No,
+		Master		   := Master.Axis,
+		Slave		   := Axis[idx].Axis,
+		CamTable	   := Cam[idx].Table2
+	);
+
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprExtSetPointGenerator" Id="{fc52e201-0c6b-4c51-8e37-02deb943a953}">
+      <Implementation>
+        <ST><![CDATA[FOR idx := 1 TO No DO
+	(*Enable*)
+	Axis[idx].EnableSetPointGenerator(Axis :=  Axis[idx].Axis);
+(*	IF Axis[idx].EnableSetPointGenerator.Done = TRUE THEN
+		Axis[idx].EnableSetPointGenerator.Execute := FALSE;
+	END_IF
+*)
+	(*Disable*)
+	Axis[idx].DisableSetPointGenerator(Axis :=  Axis[idx].Axis);
+	IF Axis[idx].DisableSetPointGenerator.Done THEN
+		Axis[idx].DisableSetPointGenerator.Execute := FALSE;
+	END_IF
+
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprJogST" Id="{ef07fc53-05ff-42b2-aaa8-d624c2771a76}">
+      <Implementation>
+        <ST><![CDATA[FOR idx :=1 TO No DO
+
+	Axis[idx].fbMC_Jog(
+		JogForward		:= AxisValue[idx].Jog_JogForward,
+		JogBackwards	:= AxisValue[idx].Jog_JogBackwards,
+		Mode 			:= AxisValue[idx].Jog_Mode,
+		Position 			:= AxisValue[idx].Jog_Position,
+		Velocity 			:= AxisValue[idx].Jog_Velocity,
+		Acceleration 		:= AxisValue[idx].Jog_Acceleration,
+		Deceleration		:= AxisValue[idx].Jog_Deceleration,
+		Jerk 			:= AxisValue[idx].Jog_Jerk,
+		Axis				:= Axis[idx].Axis
+	);
+
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprPowerST" Id="{2d723947-d236-4fd9-aec6-985964d2c0f7}">
+      <Implementation>
+        <ST><![CDATA[Master.fbMC_Power(
+		Enable			:=TRUE,
+		Enable_Negative 	:=TRUE,
+		Enable_Positive	:=TRUE,
+		Override 			:= 100,
+		Axis				:=Master.Axis
+);
+
+FOR idx :=1 TO No DO
+	Axis[idx].fbMC_Power(
+		Enable			:=TRUE,
+		Enable_Negative 	:=TRUE,
+		Enable_Positive	:=TRUE,
+		Override 			:= 100,
+		Axis				:=Axis[idx].Axis
+	);
+	Axis[idx].stPowerMcOutputs.Done		:=Axis[idx].fbMC_Power.Status;
+	Axis[idx].stPowerMcOutputs.Busy		:=Axis[idx].fbMC_Power.Busy;
+	Axis[idx].stPowerMcOutputs.Active   		:=Axis[idx].fbMC_Power.Active;
+	Axis[idx].stPowerMcOutputs.Error  		:=Axis[idx].fbMC_Power.Error;
+	Axis[idx].stPowerMcOutputs.ErrorID		:=Axis[idx].fbMC_Power.ErrorID;
+
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprReadActualPosition" Id="{718b3cec-6855-4294-92d0-a94f664a41ea}">
+      <Implementation>
+        <ST><![CDATA[Master.fb_MC_ReadActualPosition(
+		Enable 		:= TRUE,
+		Axis			:= Master.Axis,
+		Position		=>Master.ActPos
+);
+
+FOR idx :=1 TO No DO
+
+	Axis[idx].fb_MC_ReadActualPosition(
+		Enable 		:= TRUE,
+		Axis			:= Axis[idx].Axis,
+		Position		=>Axis[idx].ActPos
+	);
+
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprReadStatusST" Id="{b9eed043-b13a-4cdb-9f12-e0b2af69ed3c}">
+      <Implementation>
+        <ST><![CDATA[FOR idx:=1 TO No DO
+	Axis[idx].fbMC_ReadStatus(
+		Enable := TRUE,
+		Axis       := Axis[idx].Axis
+	);
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprRelativeST" Id="{9f3a66d0-ae1b-49ec-a117-87af50808ea7}">
+      <Implementation>
+        <ST><![CDATA[Master.fbMC_MoveRelative[1](
+	Axis	:= Master.Axis,
+);
+
+FOR idx :=1 TO No DO
+	Axis[idx].fbMC_MoveRelative[1](
+		Axis					:= Axis[idx].Axis,
+
+		Done				=> ProAndManRelative[idx].Done[1],
+		Busy				=> ProAndManRelative[idx].Busy[1],
+		Active				=> ProAndManRelative[idx].Active[1],
+		CommandAborted		=> ProAndManRelative[idx].CommandAborted[1],
+		Error				=> ProAndManRelative[idx].Error[1],
+		ErrorID				=> ProAndManRelative[idx].ErrorID[1]
+	);
+	(*IF Axis[idx].fbMC_MoveRelative[1].Done = TRUE THEN
+		Axis[idx].fbMC_MoveRelative[1].Execute :=FALSE;
+	END_IF;*)
+END_FOR;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprRelativeST2" Id="{dafd42f2-0ca8-435d-b286-7a41fb122fc4}">
+      <Implementation>
+        <ST><![CDATA[Master.fbMC_MoveRelative[2](
+	Axis	:= Master.Axis,
+);
+
+FOR idx :=1 TO No DO
+	Axis[idx].fbMC_MoveRelative[2](
+		Axis			:= Axis[idx].Axis,
+
+		Done				=> ProAndManRelative[idx].Done[2],
+		Busy				=> ProAndManRelative[idx].Busy[2],
+		Active				=> ProAndManRelative[idx].Active[2],
+		CommandAborted		=> ProAndManRelative[idx].CommandAborted[2],
+		Error				=> ProAndManRelative[idx].Error[2],
+		ErrorID				=> ProAndManRelative[idx].ErrorID[2]
+	);
+	(*IF Axis[idx].fbMC_MoveRelative[2].Done = TRUE THEN
+		Axis[idx].fbMC_MoveRelative[2].Execute :=FALSE;
+	END_IF;*)
+END_FOR;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprSetPositionST" Id="{c758586b-ea5a-4963-9784-aaf1a2e36ceb}">
+      <Implementation>
+        <ST><![CDATA[Master.fbMC_SetPosition(Axis:=Master.Axis);
+IF Master.fbMC_SetPosition.Done = TRUE THEN
+	Master.fbMC_SetPosition.Execute := FALSE;
+END_IF
+
+FOR idx := 1 TO No DO
+	Axis[idx].fbMC_SetPosition(Axis:=Axis[idx].Axis);
+
+	IF Axis[idx].fbMC_SetPosition.Done = TRUE THEN
+		Axis[idx].fbMC_SetPosition.Execute := FALSE;
+	END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="aprTouchProbe" Id="{306354ef-0609-4bd3-8fc7-e46e238ec0e0}">
+      <Implementation>
+        <ST><![CDATA[FOR idx:=1 TO No DO
+	AxisTouchProbe[idx].Trigger_Ref.EncoderID		 := idx;
+	AxisTouchProbe[idx].Trigger_Ref.TouchProbe		 := PlcEvent;
+	//AxisTouchProbe[idx].Trigger_Ref.PlcEvent		 := DigInSlave[1].Input[idx-1];
+	AxisTouchProbe[idx].Trigger_Ref.SignalSource	 := SignalSource_ZeroPulse;
+	AxisTouchProbe[idx].Trigger_Ref.Mode			 := TOUCHPROBEMODE_SINGLE;
+	Axis[idx].fbMC_TouchProbe(
+		Execute	      	         	         := AxisTouchProbe[idx].Execute,
+		WindowOnly			:= AxisTouchProbe[idx].WindowOnly,
+		FirstPosition			:= AxisTouchProbe[idx].FirstPosition,
+		LastPosition		 	:= AxisTouchProbe[idx].LastPosition,
+		Axis					:= Axis[idx].Axis,
+		TriggerInput   		         := AxisTouchProbe[idx].Trigger_Ref,
+
+		RecordedPosition	         => AxisTouchProbe[idx].RecordPosition
+	);
+	IF AxisTouchProbe[idx].Execute=TRUE THEN
+		AxisTouchProbe[idx].Execute := FALSE;
+	END_IF
+END_FOR;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="prAxis">
+      <LineId Id="6" Count="11" />
+    </LineIds>
+    <LineIds Name="prAxis.aprCamIn">
+      <LineId Id="0" Count="16" />
+    </LineIds>
+    <LineIds Name="prAxis.aprCamOut">
+      <LineId Id="0" Count="6" />
+    </LineIds>
+    <LineIds Name="prAxis.aprCamTableSelect">
+      <LineId Id="0" Count="16" />
+    </LineIds>
+    <LineIds Name="prAxis.aprExtSetPointGenerator">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="prAxis.aprJogST">
+      <LineId Id="0" Count="14" />
+    </LineIds>
+    <LineIds Name="prAxis.aprPowerST">
+      <LineId Id="0" Count="22" />
+    </LineIds>
+    <LineIds Name="prAxis.aprReadActualPosition">
+      <LineId Id="0" Count="14" />
+    </LineIds>
+    <LineIds Name="prAxis.aprReadStatusST">
+      <LineId Id="0" Count="5" />
+    </LineIds>
+    <LineIds Name="prAxis.aprRelativeST">
+      <LineId Id="0" Count="19" />
+    </LineIds>
+    <LineIds Name="prAxis.aprRelativeST2">
+      <LineId Id="0" Count="19" />
+    </LineIds>
+    <LineIds Name="prAxis.aprSetPositionST">
+      <LineId Id="0" Count="12" />
+    </LineIds>
+    <LineIds Name="prAxis.aprTouchProbe">
+      <LineId Id="0" Count="19" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

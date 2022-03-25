@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_TouchEnd" Id="{9c1db60f-34ed-45a6-81c3-e75ffcc8dcb9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TouchEnd
+VAR_INPUT
+	CurrentIdx		: DINT;
+	TouchConfig		: ARRAY [1..TouchNo] OF ST_TouchConfig;
+	TouchConfigIdx	: ARRAY [1..TouchNo] OF  INT;
+END_VAR
+VAR_OUTPUT
+	Yes				:BOOL;
+END_VAR
+VAR
+	touchIdx			:INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+Yes := FALSE;
+
+FOR touchIdx := 1 TO TouchNo DO
+	IF CurrentIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+    AND TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]] <> 0
+	THEN
+		Yes := TRUE;
+	END_IF
+END_FOR]]></ST>
+    </Implementation>
+    <LineIds Name="FB_TouchEnd">
+      <LineId Id="12" Count="9" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

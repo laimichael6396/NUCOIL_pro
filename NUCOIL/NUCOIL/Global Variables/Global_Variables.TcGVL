@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="Global_Variables" Id="{f391bd7f-6e6e-41de-830c-0d2c174828f7}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL
+	SoftVersion 					: STRING := '1.5.3';
+	PLC_StartRunning				: BOOL:=FALSE;
+	State							: INT:=ENUMSTATE.S_IDLE;
+	AmsNetId						: T_AmsNetId := '0.0.0.0.2.1'; (* NetId of EtherCAT Master *)
+	DeviceNetId               		: T_AmsNetId;
+	MotorVendor						: INT;
+	MachineType						: INT;
+	MachineSubType					: INT;
+	FServoOn						: BOOL;
+	FAlarmReset						: BOOL;
+	AirIsOpen						: ARRAY [1..AirNo] OF BOOL;
+	Oil								: ARRAY [1..OilNo] OF ST_OIL;
+	LightOGR						: ARRAY [1..3] OF BOOL;
+	Touch							: ARRAY [1..TouchNo] OF ST_Touch;
+	TouchMissStop					: BOOL:=FALSE;
+	CounterSwitch					: BOOL;
+	NoMaterialEnable				: BOOL;
+	PressDetect						: BOOL;
+	Inputstate						: ST_Inputstate;
+	Producing						: BOOL:=FALSE;
+    SubRunning  					: BOOL;
+    SubRunAloneFirstTime   			: BOOL:=TRUE;
+	MoveToColPosRunning 			: BOOL:=FALSE;
+	MoveToPosFirstTime 				: BOOL:=TRUE;
+	CycleLastCmdIsRun				: BOOL:= TRUE;
+	ProFirstTime					: BOOL:=TRUE;
+	ZRTFirstTime					: BOOL:=TRUE;
+	Emgstoptrig						: BOOL:=FALSE;
+	Override						: LREAL;(*0 ~ 100.0*)
+	IsUseVROverride					: BOOL;
+	IsVirtualOOverride				: BOOL;
+	SpeedDownTo0					: BOOL;
+	Mpg_PositiveMove				: BOOL;
+	Mpg_NegativeMove				: BOOL;
+	Master							: ST_McFBInOutVar;
+	Axis								: ARRAY [1..No] OF ST_McFBInOutVar;
+	AxisIsOn							: ARRAY [1..No] OF BOOL;
+	AxisValue						: ARRAY [1..No] OF ST_McValue;
+	AxisProduce 						: ARRAY [1..No] OF ST_Produce;
+	AxisManMove					: ARRAY [1..No] OF ST_ManMove;
+	AxisHoming AT %Q* 				: ARRAY [1..No] OF  ST_Homing;
+	AxisOpMode	AT%Q*				: ARRAY [1..No] OF SINT:=[No(8)];
+	DigOutSlave AT %Q*  		         		 : ARRAY [1..DigOutSlaveNum] OF ST_DigitOutput;
+	AxisTouchProbe					 : ARRAY [1..No] OF ST_TouchProbe;
+	TouchProbeFunction AT%Q*     	   	: ARRAY [1..No] OF UINT:=[No(15)];
+	DigInSlave AT %I*   				: ARRAY [1..DigInSlaveNum] OF ST_DigitInput;
+	AnaInSlave AT%I*					: ARRAY [1..AnaInSlaveNum] OF ST_AnaInput;
+	EL5101SlaveValue AT%I*			: UINT;
+	EL3062_VR AT%I*					: INT;
+	MasterAxis						: ST_MasterAxisValue;
+	MasterAxisPos					: ST_MasterAxisPos;
+	AxisCountPosByInput	AT %I*		: ARRAY [1..No] OF DINT;
+	SetAxisPosByCountPos			: ARRAY [1..No] OF BOOL;
+	UISetPosAllComplete				: BOOL:=FALSE;
+	FeederNo						: INT;
+	RotateWNo						: INT;
+	RWAddFeederRatio				: REAL;
+	ProAndManRelative				: ARRAY [1..No] OF ST_ProAndManRelativeState;
+	CurManMovAxis   					: INT;
+	Cam							: ARRAY [1..No] OF ST_Cam;
+	CamTable1						: ARRAY [1..No] OF ST_CamTable;
+	CamTable2						: ARRAY [1..No] OF ST_CamTable;
+	OneLineTable					: ARRAY [1..MAX_ARRAY] OF ST_OneLineTable;
+	OneLineAir						: ARRAY [1..MAX_ARRAY] OF ST_OneLineAir;
+	OneLineLineNum					: DINT;
+	Halt								: ARRAY [1..No] OF MC_Halt;
+	BrakeParam						: ARRAY [1..No] OF ST_BrakeParam;
+	BigPowerSwitch					: BOOL;
+	DriveAlarmCode AT %I*			: ARRAY [1..No] OF ST_DriveAlarmCode;
+	BuzzerIsOpen						: BOOL:=FALSE;
+	ExFeederSpeedUp				: BOOL:=FALSE;
+	AlarmList							: ST_InputState;
+	SaftyOn							: BOOL;
+	IOSwitch						: ST_IOSwitch;
+	IsZrtGrpSelect					: BOOL:=FALSE;
+
+	RingBuffer						: ARRAY [1..No] OF ST_RingBuffer;
+	RingBufferPart					: ARRAY [1..No] OF ST_RingBufferPart;
+	RingBufferAir						: ARRAY [1..AirNo] OF ST_RingBufferIO;
+	RingBufferAirPart					: ARRAY [1..AirNo] OF ST_RingBufferIOPart;
+	RingBufferTouch					: ARRAY [1..TouchNo] OF ST_RingBufferIO;
+	RingBufferTouchPart				: ARRAY [1..TouchNo] OF ST_RingBufferIOPart;
+	RingBufferExFeederSpeedUp		: ST_RingBufferIO;
+	RingBufferExFeederSpeedUpPart	: ST_RingBufferIOPart;
+	RingBufferAxesPosBuf            : ARRAY [1..No] OF ST_AxisPosBuf;
+	RingBufferAxesVelBuf            : ARRAY [1..No] OF ST_AxisVelBuf;
+	RingBufferAxesTrqBuf            : ARRAY [1..No] OF ST_AxisTrqBuf;
+
+
+	IsGetTableBuf					: BOOL;
+	AxisTableBuf						: ST_AxisTableBuf;
+	TouchTableBuf					: ST_TouchTableBuf;
+	AirTableBuf						: ST_AirTableBuf;
+	ExFSpdUpTableBuf				: ST_ExFSpdUpTableBuf;
+
+	AxisTable1						: ARRAY [1..No, 0..299999] OF LREAL;
+	AxisTable2						: ARRAY [1..No, 0..299999] OF LREAL;
+	TouchTable						: ARRAY [1..TouchNo, 0..299999] OF BOOL;
+	AirTable							: ARRAY [1..AirNo, 0..299999] OF BOOL;
+	ExFSpdUpTable					: ARRAY [0..299999] OF BOOL;
+
+	TouchAdjustTable				: ARRAY [1..TouchAdjustNo, 0..119999] OF LREAL;
+	TouchAdjustConfig				: ARRAY [1..TouchAdjustNo] OF ST_TouchAdjustConfig;
+
+	SubProgramConfig				: ARRAY [1..SubProgramNo] OF ST_SubProgramConfig;
+	SubProgramTable				: ARRAY [1..SubProgramNo] OF ST_SubProgramTable;
+
+	(* EtherCAT *)
+    SlaveConfigData 				: ARRAY [0..MaxSlaves] OF ST_EcSlaveConfigData;		
+	SlaveEcData						: ARRAY [0..MaxSlaves] OF ST_SlaveEcData;
+	SlaveEcInfoData AT%I*			: ARRAY [0..MaxSlaves] OF UINT;
+
+	AxesUseModulo					: ARRAY [1..No] OF BOOL;
+	AxesModuloTurns					: ARRAY [1..No] OF DINT;
+	AxesGradPerTurn					: ARRAY [1..No] OF DINT;
+	AxesModuloOGrad				: ARRAY [1..No] OF LREAL;
+	AxesTorque AT %I*				:ARRAY [1..NO] OF INT;
+
+	(* PowerOff 功能*)	
+	PLCToUIShutDown					:BOOL;
+	InPowerOffProcess				:BOOL;
+	PowerOffCnt						:INT;
+
+	AlarmListClear					:BOOL;
+	RoutinCheck						: BOOL;
+	IsConnecting					: BOOL := TRUE;
+	IsDebugMode						: BOOL := FALSE;
+
+END_VAR
+VAR_GLOBAL CONSTANT
+	No				: INT:=20;
+	OilNo			: INT:=1;
+	AirNo			: INT:=12;
+	TouchNo		: INT:=4;
+	TimerNo			: INT:=3;
+	DigOutSlaveNum   : INT:=3;
+	DigInSlaveNum	: INT:=4;
+	AnaInSlaveNum	: INT:=1;
+	MAX_ARRAY		: INT:=100;
+	SubProgramNo	: INT:=10;
+	G5ConfigNo		: INT:=10;
+	MaxSlaves		: INT:=99;
+	TouchAdjustNo   : INT:=4;
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

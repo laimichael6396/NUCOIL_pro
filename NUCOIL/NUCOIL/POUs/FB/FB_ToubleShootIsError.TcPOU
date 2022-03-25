@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_ToubleShootIsError" Id="{b388571a-1e98-4595-bebb-ce0302799d48}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ToubleShootIsError
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	IsError	: BOOL;
+END_VAR
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IsError := FALSE;
+IF Inputstate.Reset OR Inputstate.ExFeederError  OR  Inputstate.OilError OR Inputstate.EMGStop OR Inputstate.FAlarm_1370 OR Inputstate.ExDeviceError
+OR Inputstate.PanelEStop OR Inputstate.FrontEStop OR Inputstate.SideEStop OR Inputstate.RearEStop OR Inputstate.DecoilorEStop OR IsConnecting = FALSE
+OR Inputstate.NG
+THEN
+	IsError := TRUE;
+END_IF
+IF IOSwitch.SaftyEnable 
+AND (Inputstate.SafetyError OR Inputstate.SafetyError1 OR Inputstate.SafetyError2 OR Inputstate.SafetyError3 OR Inputstate.SafetyError4)
+THEN
+	IsError := TRUE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_ToubleShootIsError">
+      <LineId Id="8" Count="11" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

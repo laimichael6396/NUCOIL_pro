@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="ManMovCal" Id="{3f62a37f-c46a-4f04-b69b-69e7245689c1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ManMovCal
+VAR_INPUT
+	Axis			: INT;
+	Pos			: LREAL;
+	MinPos		: LREAL;
+	MaxPos   	: LREAL;
+END_VAR
+VAR_OUTPUT
+	NPos	: LREAL;
+	Dist		: LREAL;
+	Vel		: LREAL;
+	Acc		: LREAL;
+	Jerk		: LREAL;
+END_VAR
+VAR
+	StartPos		: DINT;
+	EndPos		: DINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[StartPos := LREAL_TO_DINT(Pos * AxisManMove[Axis].UnitRatio);(*單位轉換有四捨五入功能 超過DINT大小仍可運作正常*)
+NPos := Pos  +  AxisManMove[Axis].DistByUnit ;
+
+IF NPos < MinPos THEN
+	IF NPos <= Pos THEN (* 反向移動 *)
+		IF Pos < MinPos THEN (* 目前已經小於最小值位置 不動*)
+			NPos := Pos;
+		ELSE (* 目前位置還沒到達最大值 *)
+			NPos := MinPos;
+		END_IF
+	END_IF
+ELSIF NPos > MaxPos THEN
+	IF NPos >= Pos THEN (* 正向移動 *)
+		IF Pos > MaxPos THEN (* 目前已經大於最大值位置 不動*)
+			NPos := Pos;
+		ELSE (* 目前位置還沒到達最大值 *)
+			NPos := MaxPos;
+		END_IF
+	END_IF
+END_IF
+
+EndPos  := LREAL_TO_DINT((NPos) * AxisManMove[Axis].UnitRatio);
+
+Dist := DINT_TO_LREAL(EndPos - StartPos);
+
+Vel := ABS( Dist  / (AxisManMove[Axis].MoveTime - AxisManMove[Axis].AccTime) ) ;
+
+(* S-Curve
+Acc := 2*Vel /( (1 + (1 - (0.01*AxisManMove[Axis].JerkP))) * AxisManMove[Axis].AccTime );
+Jerk:= (200 / AxisManMove[Axis].JerkP) * (Acc  / AxisManMove[Axis].AccTime);
+*)
+
+(*T-Curve*)
+Acc := ABS(Vel/AxisManMove[Axis].AccTime);
+Jerk:= Acc/0.0001;]]></ST>
+    </Implementation>
+    <LineIds Name="ManMovCal">
+      <LineId Id="18" Count="34" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

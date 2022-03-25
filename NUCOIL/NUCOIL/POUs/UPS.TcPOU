@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="UPS" Id="{f801b098-4416-477b-a3e1-f257a7af101a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM UPS
+VAR
+	fbGetUPSStatus	: FB_GetUPSStatus;(*Cx20x0*)
+
+	Timer			: TON;
+	PowerFailTrig	: R_TRIG;
+
+	fb51x0UPS		: FB_S_UPS_CX51x0;			(* UPS-FB instance *)
+	eUpsMode		: E_S_UPS_Mode	:= eSUPS_CheckPowerStatus; (* UPS mode (writing persistent data + shutdown) *)
+
+	fbWritePersistentData	:FB_WritePersistentData;
+END_VAR
+VAR PERSISTENT
+	powerFailCount1 	:UDINT;
+	powerFailCount2 	:UDINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF DeviceNetId <> '' THEN
+	fbGetUPSStatus(bEnable := TRUE);
+
+	IF NOT fbGetUPSStatus.bError THEN
+		IF fbGetUPSStatus.stStatus.ePowerStatus = PowerOnBattery THEN
+			PowerFailTrig(CLK:= TRUE);
+			IF PowerFailTrig.Q THEN
+				InPowerOffProcess := TRUE;
+			END_IF
+		ELSE
+			IF PowerFailTrig.M AND InPowerOffProcess THEN
+				InPowerOffProcess := FALSE;
+			END_IF
+			PowerFailTrig(CLK:= FALSE);
+		END_IF
+(*	ELSE
+CX51xx
+fb51x0UPS(eUpsMode := eUpsMode);
+eGlobalSUpsState: Internal state of the function block as global copy of VAR_OUTPUT*)
+(*
+IF eGlobalSUpsState >= eSUPS_PowerFailure THEN
+			Inputstate.PowerOff := TRUE;
+		ELSE
+			Inputstate.PowerOff := FALSE;
+		END_IF
+*)
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="UPS">
+      <LineId Id="16" Count="28" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

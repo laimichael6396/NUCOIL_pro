@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_SetPosByUI" Id="{c553d260-de16-40b7-8bb9-b5e41f67924d}">
+    <Declaration><![CDATA[TYPE ST_SetPosByUI :
+STRUCT
+	Position	:LREAL:=0;
+	Axis		:INT:=1;
+	Execute	:BOOL:=FALSE;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

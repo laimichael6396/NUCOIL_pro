@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_TouchTableBuf" Id="{0a02ba66-1f8b-4168-b88b-c1deddf3fd1a}">
+    <Declaration><![CDATA[TYPE ST_TouchTableBuf :
+STRUCT
+	Table	: ARRAY [1..TouchNo, 0..1999] OF BOOL;
+	OK		: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

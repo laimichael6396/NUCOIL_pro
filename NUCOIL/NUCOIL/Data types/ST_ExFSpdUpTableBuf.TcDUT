@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_ExFSpdUpTableBuf" Id="{1d7791f2-8933-44b5-8967-471dc81a4b37}">
+    <Declaration><![CDATA[TYPE ST_ExFSpdUpTableBuf :
+STRUCT
+	Table	: ARRAY [0..1999] OF BOOL;
+	OK		: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

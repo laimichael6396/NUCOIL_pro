@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_DigitOutput" Id="{9f61ee96-cf87-4bb9-bc50-6ef65786c220}">
+    <Declaration><![CDATA[TYPE ST_DigitOutput :
+STRUCT
+	Output 	: ARRAY[1..16] OF BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

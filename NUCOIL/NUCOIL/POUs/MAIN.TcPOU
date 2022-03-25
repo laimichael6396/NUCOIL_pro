@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="MAIN" Id="{93ea57bd-1043-4128-a85f-8fe511798173}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	ENUM 			:(S_PLCINITIAL, S_PLC_BigPowerOn, S_PLC_FSetPos, S_PLC_START);
+	PLCState		: INT;
+	idx 				: INT;
+	Trig				: R_TRIG;
+	Count1			: INT:=0;
+	Timer			: TON;
+	GetMachineInfo      :FB_GetMachineInfo;
+	FSetPosExe		:BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF PLC_StartRunning = TRUE THEN
+	CASE PLCState OF
+		S_PLCINITIAL:(*初始*)
+			GetMachineInfo(Execute:= TRUE);
+			IF NOT GetMachineInfo.Busy THEN
+				GetMachineInfo.Execute := FALSE;
+				PLCState := S_PLC_BigPowerOn;
+			END_IF
+
+		S_PLC_BigPowerOn:
+			BigPowerSwitch := TRUE;
+						IOMapping();
+			Timer(IN:= TRUE,PT:= T#500ms );
+			IF Timer.Q THEN
+				Timer(IN:= FALSE);
+				FSetPosExe := TRUE;
+				PLCState := S_PLC_FSetPos;
+			END_IF
+		S_PLC_FSetPos:
+						prAxis();
+			Axis[1].fbMC_SetPosition(
+				Execute	:=FSetPosExe,
+				Position	:= 0,
+				Axis		:= Axis[1].Axis
+			);
+			IF Axis[1].fbMC_SetPosition.Done THEN
+				FSetPosExe := FALSE;
+				Timer(IN:= TRUE,PT:= T#1000ms );
+			END_IF
+			Timer();
+			IF Timer.Q THEN
+				Timer(IN:= FALSE);
+				PLCState := S_PLC_START;
+			END_IF
+		S_PLC_START:
+
+						IOMapping();
+						CommunicationQualityCheck();
+
+						EMGStop();
+						Error();
+
+						SetCountPosToActPos();
+						prAxis();
+
+			FServoOn:=TRUE;
+
+						Mpg();
+						SetOverride();
+
+						Produce();
+						SubRunAlone();
+						MoveToColPos();
+						ManMove();
+						HomeByTouchProbe();
+						SetPosByUI();
+						MCRelativeMove();
+
+						AlertLight();
+
+						IOMapping();
+						AxisStatusDataStore();
+						EncoderClear();
+						UPS();
+	END_CASE
+
+END_IF
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="11" Count="69" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

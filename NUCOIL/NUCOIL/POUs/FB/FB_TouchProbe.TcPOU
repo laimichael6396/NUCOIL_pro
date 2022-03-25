@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_TouchProbe" Id="{1eb36dc9-79a4-42ba-b573-1d044a7b5f9d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TouchProbe
+VAR_INPUT
+	AxisIdx	:INT;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[AxisTouchProbe[AxisIdx].Execute := TRUE;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_TouchProbe">
+      <LineId Id="8" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

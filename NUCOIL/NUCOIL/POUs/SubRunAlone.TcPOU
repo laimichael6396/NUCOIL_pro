@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="SubRunAlone" Id="{1ef880d8-1134-4826-8f80-be7aeae9cd0b}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM SubRunAlone
+VAR
+   	SubRunAloneState :(S_FillSubTable, S_FillSubIOTable,  S_EnableExtSetPoint, S_WaitExtSetPoint, S_Run, S_Complete);
+	IsAutoRun 			:BOOL;
+	Idx0FirstTime			:BOOL;
+	idx					:INT ;
+	axisIdx				:INT;
+    airIdx				:INT;
+	SendOffset			:UDINT := 0;
+	RunSubNo			:INT;
+	SubSpeed			:REAL:= 30;
+	CurrentTableIdx		:DINT;
+	CurrentTableOffset	:REAL;
+
+	IsExtSetPointDone		:ARRAY [1..No] OF BOOL;
+	IsSetPointComplete 	:BOOL;
+	TableOffsetPos		:ARRAY [1..No] OF  LREAL;
+	OldPosition			:ARRAY [1..No] OF LREAL;
+	ExtVelocity			:ARRAY [1..No] OF LREAL;
+	OldVelocity			:ARRAY [1..No] OF LREAL;
+	ExtAcceleration		:LREAL;
+	ExtDirection			:DINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF SubRunning THEN
+
+	IF SubRunAloneFirstTime THEN
+		(*初始化*)
+				Initial();
+	END_IF
+
+	CASE SubRunAloneState OF
+
+		S_FillSubTable:
+						FillSubTable();
+
+		S_FillSubIOTable:
+						FillSubIOTable();
+
+		S_EnableExtSetPoint:
+						EnableExtSetPoint();
+
+		S_WaitExtSetPoint:
+						WaitExtSetPoint();
+
+		S_Run:
+
+			(* 表一開始 初始*)
+			IF CurrentTableIdx = 0 AND Idx0FirstTime THEN
+				Idx0FirstTime 		:= FALSE;
+				OldPosition[axisIdx] 	:= 0;
+				OldVelocity[axisIdx] 	:= 0;
+			END_IF
+
+
+
+			(*副程式*)
+
+			(* 設定ExtPosition *)
+			FOR axisIdx := 1 TO No DO
+				IF AxisIsOn[axisIdx] THEN
+					(* 超過這條最後idx *)
+					IF (CurrentTableIdx + CurrentTableOffset) > (SubProgramConfig[RunSubNo].TotalTableSize - 1) THEN
+						TableOffsetPos[axisIdx]:= SubProgramTable[RunSubNo].AxisTable[axisIdx, CurrentTableIdx];
+					ELSE
+					(* idx在此表內 *)
+						TableOffsetPos[axisIdx]:= SubProgramTable[RunSubNo].AxisTable[axisIdx, CurrentTableIdx] + ( SubProgramTable[RunSubNo].AxisTable[axisIdx, CurrentTableIdx + 1] - SubProgramTable[RunSubNo].AxisTable[axisIdx, CurrentTableIdx] ) * CurrentTableOffset;
+					END_IF
+				END_IF
+			END_FOR
+
+						SubAirFunc();
+
+			FOR axisIdx := 1 TO No DO
+				IF AxisIsOn[axisIdx] THEN
+					ExtVelocity[axisIdx]:= (TableOffsetPos[axisIdx] - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+					OldPosition[axisIdx]:= TableOffsetPos[axisIdx];
+					ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+					OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+					ExtDirection := SEL(TableOffsetPos[axisIdx] >= OldPosition[axisIdx], -1, 1);
+
+					MC_ExtSetPointGenFeed(
+						Position := TableOffsetPos[axisIdx],
+						Velocity := ExtVelocity[axisIdx],
+						Acceleration := ExtAcceleration,
+						Direction := ExtDirection,
+						Axis := Axis[axisIdx].Axis);
+				END_IF
+			END_FOR
+
+
+			IF IsAutoRun THEN
+				CurrentTableOffset := CurrentTableOffset + SubSpeed/100;
+			ELSE
+				CurrentTableOffset := CurrentTableOffset + Override/100;
+			END_IF
+			
+			IF CurrentTableOffset >= 1 THEN
+				CurrentTableOffset := CurrentTableOffset - 1;
+				CurrentTableIdx := CurrentTableIdx + 1;
+			END_IF
+
+			IF CurrentTableIdx = SubProgramConfig[RunSubNo].TotalTableSize THEN
+				SubRunAloneState := S_Complete;
+				SubRunAloneFirstTime := TRUE;
+				SubRunning := FALSE;
+				FOR axisIdx:=1 TO No DO
+					Axis[axisIdx].DisableSetPointGenerator.Execute := TRUE;
+				END_FOR			
+			END_IF
+
+
+	END_CASE
+
+END_IF
+]]></ST>
+    </Implementation>
+    <Action Name="EnableExtSetPoint" Id="{5a27ef4a-2e4c-4777-870e-3178c3582c8b}">
+      <Implementation>
+        <ST><![CDATA[
+
+FOR axisIdx := 1 TO No DO
+	IF AxisIsOn[axisIdx] THEN
+		Axis[axisIdx].EnableSetPointGenerator
+		(
+			Execute := TRUE,
+			Position := Axis[axisIdx].ActPos,
+			PositionType := POSITIONTYPE_ABSOLUTE,
+			Axis :=  Axis[axisIdx].Axis
+		);
+	END_IF
+END_FOR
+SubRunAloneState := S_WaitExtSetPoint;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillSubIOTable" Id="{bf10e14c-f79d-4d72-a3ed-80735c4372c3}">
+      <Implementation>
+        <ST><![CDATA[IF AirTableBuf.OK THEN
+    FOR airIdx := 1 TO AirNo DO
+        FOR Idx := 0 TO 1999  DO
+			SubProgramTable[RunSubNo].airTable[airIdx, idx + SendOffset] := AirTableBuf.Table[airIdx, idx];
+		END_FOR
+	END_FOR
+	SendOffset := SendOffset + 2000;
+	AirTableBuf.OK := FALSE;
+	IF SendOffset >= SubProgramConfig[RunSubNo].TotalTableSize THEN
+		SendOffset := 0;
+        SubRunAloneState := S_EnableExtSetPoint;
+	END_IF
+END_IF
+IsGetTableBuf := AirTableBuf.OK;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillSubTable" Id="{46e09d9b-0c92-4518-a92f-0790b617ac4f}">
+      <Implementation>
+        <ST><![CDATA[IF AxisTableBuf.OK THEN
+	FOR axisIdx := 1 TO No DO
+		FOR Idx := 0 TO 1999  DO
+			SubProgramTable[RunSubNo].AxisTable[axisIdx, idx + SendOffset] := AxisTableBuf.Table[axisIdx, idx];
+		END_FOR
+	END_FOR
+	SendOffset := SendOffset + 2000;
+	AxisTableBuf.OK := FALSE;
+	IF SendOffset >= SubProgramConfig[RunSubNo].TotalTableSize THEN
+		SendOffset := 0;
+        SubRunAloneState := S_FillSubIOTable;;
+	END_IF
+END_IF
+IsGetTableBuf := AxisTableBuf.OK;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Initial" Id="{a116bb20-3bd4-4e9d-abf2-489449adcdb7}">
+      <Implementation>
+        <ST><![CDATA[
+FOR axisIdx:=1 TO No DO
+	(*Set的最後一個點非0的時候沒清會爆衝*)
+	Axis[axisIdx].Axis.PlcToNc.ExtSetPos := Axis[axisIdx].ActPos;
+	Axis[axisIdx].EnableSetPointGenerator.Execute := FALSE;
+	TableOffsetPos[axisIdx] := Axis[axisIdx].ActPos;
+	OldPosition[axisIdx] := Axis[axisIdx].ActPos;
+	OldVelocity[axisIdx] := 0;
+	IsExtSetPointDone[axisIdx]:=FALSE;
+END_FOR
+
+AxisTableBuf.OK		:= FALSE;
+
+SubRunAloneFirstTime:= FALSE;
+Idx0FirstTime		:= TRUE;
+SubRunAloneState	:= S_FillSubTable;
+
+(*Send Table*)
+SendOffset			:= 0;
+
+(*Index*)
+CurrentTableIdx		:= 0;
+CurrentTableOffset	:= 0;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SubAirFunc" Id="{7f53dee9-3f0b-44f6-bb46-cada900439b5}">
+      <Implementation>
+        <ST><![CDATA[(*----------------SubAir----------------1,2,7,8是探針汽缸*)
+(*非測試編輯時跑表*)
+IF NOT (Inputstate.VRSwitch = FALSE) THEN
+	FOR airIdx := 1 TO AirNo DO
+		IF  airIdx <> 1 
+		AND airIdx <> 2 
+		AND airIdx <> 7 
+		AND airIdx <> 8
+		THEN
+			AirIsOpen[airIdx] := SubProgramTable[RunSubNo].AirTable[airIdx, CurrentTableIdx];
+		END_IF
+	END_FOR
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WaitExtSetPoint" Id="{3b8a7384-e738-4f5b-9f9b-bfa89cd7db7d}">
+      <Implementation>
+        <ST><![CDATA[
+IsSetPointComplete := TRUE;
+FOR axisIdx := 1 TO No DO
+	IF AxisIsOn[axisIdx] THEN
+		IF Axis[axisIdx].EnableSetPointGenerator.Done THEN
+			Axis[axisIdx].EnableSetPointGenerator.Execute := FALSE;
+			IsExtSetPointDone[axisIdx] := TRUE;
+		END_IF
+		IsSetPointComplete := IsSetPointComplete AND IsExtSetPointDone[axisIdx];
+	END_IF
+END_FOR
+IF IsSetPointComplete THEN
+	SubRunAloneState := S_Run;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="SubRunAlone">
+      <LineId Id="23" Count="92" />
+    </LineIds>
+    <LineIds Name="SubRunAlone.EnableExtSetPoint">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="SubRunAlone.FillSubIOTable">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="SubRunAlone.FillSubTable">
+      <LineId Id="0" Count="14" />
+    </LineIds>
+    <LineIds Name="SubRunAlone.Initial">
+      <LineId Id="0" Count="23" />
+    </LineIds>
+    <LineIds Name="SubRunAlone.SubAirFunc">
+      <LineId Id="0" Count="12" />
+    </LineIds>
+    <LineIds Name="SubRunAlone.WaitExtSetPoint">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

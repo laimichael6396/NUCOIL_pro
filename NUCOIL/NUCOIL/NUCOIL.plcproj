@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{312ffc72-61af-4036-8089-f62bcfb5b85c}</ProjectGuid>
+    <Name>NUCOIL</Name>
+    <Application>{8a78f835-a3d0-46f7-91f3-74354f0c3390}</Application>
+    <TypeSystem>{92d5c661-8518-43ec-9244-6ad8056e2502}</TypeSystem>
+    <Implicit_Task_Info>{ad0bdda3-accf-4e42-876b-96137dc24097}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{bc95410c-44ce-4f4a-8ccb-931988506deb}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{f7c4b500-39e8-4116-a6b4-c746f152a4cf}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{f7105559-4f0c-42c5-8bc1-e2b8639284f4}</LibraryReferences>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Data types" />
+    <Folder Include="Global Variables" />
+    <Folder Include="POUs" />
+    <Folder Include="POUs\FB" />
+    <Folder Include="Visualizations" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data types\ST_AirTableBuf.TcDUT" />
+    <Compile Include="Data types\ST_AlertLight.TcDUT" />
+    <Compile Include="Data types\ST_AnaInput.TcDUT" />
+    <Compile Include="Data types\ST_AxisPosBuf.TcDUT" />
+    <Compile Include="Data types\ST_AxisTableBuf.TcDUT" />
+    <Compile Include="Data types\ST_AxisTrqBuf.TcDUT" />
+    <Compile Include="Data types\ST_AxisVelBuf.TcDUT" />
+    <Compile Include="Data types\ST_BrakeParam.TcDUT" />
+    <Compile Include="Data types\ST_Cam.TcDUT" />
+    <Compile Include="Data types\ST_CamTable.TcDUT" />
+    <Compile Include="Data types\ST_DigitInput.TcDUT" />
+    <Compile Include="Data types\ST_DigitOutput.TcDUT" />
+    <Compile Include="Data types\ST_DriveAlarmCode.TcDUT" />
+    <Compile Include="Data types\ST_ExFSpdUpTableBuf.TcDUT" />
+    <Compile Include="Data types\ST_FeederInProduce.TcDUT" />
+    <Compile Include="Data types\ST_G5Config.TcDUT" />
+    <Compile Include="Data types\ST_G5Status.TcDUT" />
+    <Compile Include="Data types\ST_Homing.TcDUT" />
+    <Compile Include="Data types\ST_InputState.TcDUT" />
+    <Compile Include="Data types\ST_IOSwitch.TcDUT" />
+    <Compile Include="Data types\ST_ManMove.TcDUT" />
+    <Compile Include="Data types\ST_MasterAxisPos.TcDUT" />
+    <Compile Include="Data types\ST_MasterAxisValue.TcDUT" />
+    <Compile Include="Data types\ST_McFBInOutVar.TcDUT" />
+    <Compile Include="Data types\ST_MCRelativeInput.TcDUT" />
+    <Compile Include="Data types\ST_MCRelativeOutput.TcDUT" />
+    <Compile Include="Data types\ST_McValue.TcDUT" />
+    <Compile Include="Data types\ST_OIL.TcDUT" />
+    <Compile Include="Data types\ST_OneLineAir.TcDUT" />
+    <Compile Include="Data types\ST_OneLineTable.TcDUT" />
+    <Compile Include="Data types\ST_ProAndManRelativeState.TcDUT" />
+    <Compile Include="Data types\ST_Produce.TcDUT" />
+    <Compile Include="Data types\ST_RingBuffer.TcDUT" />
+    <Compile Include="Data types\ST_RingBufferIO.TcDUT" />
+    <Compile Include="Data types\ST_RingBufferIOPart.TcDUT" />
+    <Compile Include="Data types\ST_RingBufferPart.TcDUT" />
+    <Compile Include="Data types\ST_SetPosByUI.TcDUT" />
+    <Compile Include="Data types\ST_SlaveEcData.TcDUT" />
+    <Compile Include="Data types\ST_SubProgramConfig.TcDUT" />
+    <Compile Include="Data types\ST_SubProgramTable.TcDUT" />
+    <Compile Include="Data types\ST_Touch.TcDUT" />
+    <Compile Include="Data types\ST_TouchAdjustConfig.TcDUT" />
+    <Compile Include="Data types\ST_TouchConfig.TcDUT" />
+    <Compile Include="Data types\ST_TouchProbe.TcDUT" />
+    <Compile Include="Data types\ST_TouchProbeHomeByUI.TcDUT" />
+    <Compile Include="Data types\ST_TouchTableBuf.TcDUT" />
+    <Compile Include="Global Variables\ENUMSTATE.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global Variables\Global_Variables.TcGVL" />
+    <Compile Include="Global Variables\MachineSubTypeEnum.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global Variables\MachineTypeEnum.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global Variables\MANMOVEENUM.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global Variables\MotorVenderEnum.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global Variables\Variable_Configuration.TcGVL" />
+    <Compile Include="POUs\AlertLight.TcPOU" />
+    <Compile Include="POUs\AxisStatusDataStore.TcPOU" />
+    <Compile Include="POUs\CoEConfig.TcPOU" />
+    <Compile Include="POUs\CommunicationQualityCheck.TcPOU" />
+    <Compile Include="POUs\EMGStop.TcPOU" />
+    <Compile Include="POUs\EncoderClear.TcPOU" />
+    <Compile Include="POUs\Error.TcPOU" />
+    <Compile Include="POUs\FB\AlarmListClear.TcPOU" />
+    <Compile Include="POUs\FB\FB_CheckInfoData.TcPOU" />
+    <Compile Include="POUs\FB\FB_CloseAir.TcPOU" />
+    <Compile Include="POUs\FB\FB_CloseIO.TcPOU" />
+    <Compile Include="POUs\FB\FB_CloseOil.TcPOU" />
+    <Compile Include="POUs\FB\FB_EcAbnormal.TcPOU" />
+    <Compile Include="POUs\FB\FB_EncoderClear.TcPOU" />
+    <Compile Include="POUs\FB\FB_FNeedHoldPos.TcPOU" />
+    <Compile Include="POUs\FB\FB_GetExtPosition.TcPOU" />
+    <Compile Include="POUs\FB\FB_GetMachineInfo.TcPOU" />
+    <Compile Include="POUs\FB\FB_InAnotherTouch.TcPOU" />
+    <Compile Include="POUs\FB\FB_IsAdjustAxis.TcPOU" />
+    <Compile Include="POUs\FB\FB_IsAdjustTouch.TcPOU" />
+    <Compile Include="POUs\FB\FB_PosNear.TcPOU" />
+    <Compile Include="POUs\FB\FB_ToubleShootIsError.TcPOU" />
+    <Compile Include="POUs\FB\FB_TouchEnd.TcPOU" />
+    <Compile Include="POUs\FB\FB_TouchProbe.TcPOU" />
+    <Compile Include="POUs\FB\ManMovCal.TcPOU" />
+    <Compile Include="POUs\FB\MasterMove.TcPOU" />
+    <Compile Include="POUs\FB\MasterMove2.TcPOU" />
+    <Compile Include="POUs\FB\PPMCal.TcPOU" />
+    <Compile Include="POUs\FB\RelativeMOVE.TcPOU" />
+    <Compile Include="POUs\FB\RelativeMOVE2.TcPOU" />
+    <Compile Include="POUs\FB\SetMotionFuction.TcPOU" />
+    <Compile Include="POUs\FB\SetPositionTable.TcPOU" />
+    <Compile Include="POUs\HomeByTouchProbe.TcPOU" />
+    <Compile Include="POUs\IOMapping.TcPOU" />
+    <Compile Include="POUs\MAIN.TcPOU" />
+    <Compile Include="POUs\ManMove.TcPOU" />
+    <Compile Include="POUs\MCRelativeMove.TcPOU" />
+    <Compile Include="POUs\MoveToColPos.TcPOU" />
+    <Compile Include="POUs\Mpg.TcPOU" />
+    <Compile Include="POUs\prAxis.TcPOU" />
+    <Compile Include="POUs\Produce.TcPOU" />
+    <Compile Include="POUs\SetCountPosToActPos.TcPOU" />
+    <Compile Include="POUs\SetOverride.TcPOU" />
+    <Compile Include="POUs\SetPosByUI.TcPOU" />
+    <Compile Include="POUs\SubRunAlone.TcPOU" />
+    <Compile Include="POUs\UPS.TcPOU" />
+    <Compile Include="Standard.TcTTO" />
+  </ItemGroup>
+  <ItemGroup>
+    <LibraryReference Include="TcSUPS_CX51x0,newest,Evolution">
+      <Namespace>TcSUPS_CX51x0</Namespace>
+    </LibraryReference>
+    <LibraryReference Include="YaskawaFunctions,newest,Evolution">
+      <Namespace>YaskawaFunctions</Namespace>
+    </LibraryReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="Tc2_Drive">
+      <DefaultResolution>Tc2_Drive, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Drive</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_EtherCAT">
+      <DefaultResolution>Tc2_EtherCAT, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_EtherCAT</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_IoFunctions">
+      <DefaultResolution>Tc2_IoFunctions, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_IoFunctions</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Math">
+      <DefaultResolution>Tc2_Math, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Math</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2_Camming">
+      <DefaultResolution>Tc2_MC2_Camming, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2_Camming</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_NC">
+      <DefaultResolution>Tc2_NC, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_NC</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NUCOIL.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{A3BBA713-63D7-4de6-BEC2-E3BAAD8789F8}</v>
+        <o>
+          <v n="Name">"{A3BBA713-63D7-4de6-BEC2-E3BAAD8789F8}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{C70B7845-2722-4a9b-A0EA-88C877A4B36F}</v>
+        <o>
+          <v n="Name">"{C70B7845-2722-4a9b-A0EA-88C877A4B36F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String">
+            <v>EnableMaxAuthenticationTrials</v>
+            <v>true</v>
+            <v>EnableMaxTimeOfInactivity</v>
+            <v>true</v>
+            <v>UserList</v>
+            <o t="UserList">
+              <a n="Users" cet="User">
+                <o>
+                  <v n="Id">{35cbe5ec-8322-417c-af6a-4fb4d5675cb6}</v>
+                  <v n="Name">"Owner"</v>
+                  <v n="FullName">""</v>
+                  <v n="Description">""</v>
+                  <v n="Active">true</v>
+                </o>
+              </a>
+            </o>
+            <v>MaxTimeOfInactivity</v>
+            <v>10</v>
+            <v>MaxAuthenticationTrials</v>
+            <v>3</v>
+            <v>EnableNewHashFormat</v>
+            <v>false</v>
+            <v>GroupList</v>
+            <o t="GroupList">
+              <a n="Groups" cet="Group">
+                <o>
+                  <v n="Id">{c45e999b-ca97-4b6c-af29-babe3f1095fb}</v>
+                  <v n="Name">"Owner"</v>
+                  <v n="Description">""</v>
+                  <v n="IsEveryoneGroup">false</v>
+                  <v n="IsOwnerGroup">true</v>
+                  <l n="UserMembers" t="ArrayList" cet="Guid">
+                    <v>35cbe5ec-8322-417c-af6a-4fb4d5675cb6</v>
+                  </l>
+                  <l n="GroupMembers" t="ArrayList" />
+                </o>
+                <o>
+                  <v n="Id">{48f0c301-c94d-4d53-a3a5-4a7a690ea0c1}</v>
+                  <v n="Name">"Everyone"</v>
+                  <v n="Description">""</v>
+                  <v n="IsEveryoneGroup">true</v>
+                  <v n="IsOwnerGroup">false</v>
+                  <l n="UserMembers" t="ArrayList" cet="Guid">
+                    <v>35cbe5ec-8322-417c-af6a-4fb4d5675cb6</v>
+                  </l>
+                  <l n="GroupMembers" t="ArrayList" />
+                </o>
+              </a>
+            </o>
+            <v>UserAuthentication</v>
+            <o t="UserAuthentication">
+              <d n="UserToPasswordHash" t="Hashtable" ckt="Guid" cvt="String">
+                <v>35cbe5ec-8322-417c-af6a-4fb4d5675cb6</v>
+                <v>d41d8cd98f00b204e9800998ecf8427e</v>
+              </d>
+            </o>
+          </d>
+        </o>
+        <v>{40450F57-0AA3-4216-96F3-5444ECB29763}</v>
+        <o>
+          <v n="Name">"{40450F57-0AA3-4216-96F3-5444ECB29763}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>ActiveVisuProfile</v>
+            <v>IR0whWr8bwfwBwAAiD2qpQAAAABVAgAA37x72QAAAAABAAAAAAAAAAEaUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwACTHsAZgA5ADUAYgBiADQAMgA2AC0ANQA1ADIANAAtADQAYgA0ADUALQA5ADQAMAAwAC0AZgBiADAAZgAyAGUANwA3AGUANQAxAGIAfQADCE4AYQBtAGUABDBUAHcAaQBuAEMAQQBUACAAMwAuADEAIABCAHUAaQBsAGQAIAA0ADAAMgA0AC4ANwAFFlAAcgBvAGYAaQBsAGUARABhAHQAYQAGTHsAMQA2AGUANQA1AGIANgAwAC0ANwAwADQAMwAtADQAYQA2ADMALQBiADYANQBiAC0ANgAxADQANwAxADMAOAA3ADgAZAA0ADIAfQAHEkwAaQBiAHIAYQByAGkAZQBzAAhMewAzAGIAZgBkADUANAA1ADkALQBiADAANwBmAC0ANABkADYAZQAtAGEAZQAxAGEALQBhADgAMwAzADUANgBhADUANQAxADQAMgB9AAlMewA5AGMAOQA1ADgAOQA2ADgALQAyAGMAOAA1AC0ANAAxAGIAYgAtADgAOAA3ADEALQA4ADkANQBmAGYAMQBmAGUAZABlADEAYQB9AAoOVgBlAHIAcwBpAG8AbgALBmkAbgB0AAwKVQBzAGEAZwBlAA0KVABpAHQAbABlAA4aVgBpAHMAdQBFAGwAZQBtAE0AZQB0AGUAcgAPDkMAbwBtAHAAYQBuAHkAEAxTAHkAcwB0AGUAbQARElYAaQBzAHUARQBsAGUAbQBzABIwVgBpAHMAdQBFAGwAZQBtAHMAUwBwAGUAYwBpAGEAbABDAG8AbgB0AHIAbwBsAHMAEyhWAGkAcwB1AEUAbABlAG0AcwBXAGkAbgBDAG8AbgB0AHIAbwBsAHMAFCRWAGkAcwB1AEUAbABlAG0AVABlAHgAdABFAGQAaQB0AG8AcgAVIlYAaQBzAHUATgBhAHQAaQB2AGUAQwBvAG4AdAByAG8AbAAWFHYAaQBzAHUAaQBuAHAAdQB0AHMAFwxzAHkAcwB0AGUAbQAYGFYAaQBzAHUARQBsAGUAbQBCAGEAcwBlABkmRABlAHYAUABsAGEAYwBlAGgAbwBsAGQAZQByAHMAVQBzAGUAZAAaCGIAbwBvAGwAGyJQAGwAdQBnAGkAbgBDAG8AbgBzAHQAcgBhAGkAbgB0AHMAHEx7ADQAMwBkADUAMgBiAGMAZQAtADkANAAyAGMALQA0ADQAZAA3AC0AOQBlADkANAAtADEAYgBmAGQAZgAzADEAMABlADYAMwBjAH0AHRxBAHQATABlAGEAcwB0AFYAZQByAHMAaQBvAG4AHhRQAGwAdQBnAGkAbgBHAHUAaQBkAB8WUwB5AHMAdABlAG0ALgBHAHUAaQBkACBIYQBmAGMAZAA1ADQANAA2AC0ANAA5ADEANAAtADQAZgBlADcALQBiAGIANwA4AC0AOQBiAGYAZgBlAGIANwAwAGYAZAAxADcAIRRVAHAAZABhAHQAZQBJAG4AZgBvACJMewBiADAAMwAzADYANgBhADgALQBiADUAYwAwAC0ANABiADkAYQAtAGEAMAAwAGUALQBlAGIAOAA2ADAAMQAxADEAMAA0AGMAMwB9ACMOVQBwAGQAYQB0AGUAcwAkTHsAMQA4ADYAOABmAGYAYwA5AC0AZQA0AGYAYwAtADQANQAzADIALQBhAGMAMAA2AC0AMQBlADMAOQBiAGIANQA1ADcAYgA2ADkAfQAlTHsAYQA1AGIAZAA0ADgAYwAzAC0AMABkADEANwAtADQAMQBiADUALQBiADEANgA0AC0ANQBmAGMANgBhAGQAMgBiADkANgBiADcAfQAmFk8AYgBqAGUAYwB0AHMAVAB5AHAAZQAnVFUAcABkAGEAdABlAEwAYQBuAGcAdQBhAGcAZQBNAG8AZABlAGwARgBvAHIAQwBvAG4AdgBlAHIAdABpAGIAbABlAEwAaQBiAHIAYQByAGkAZQBzACgQTABpAGIAVABpAHQAbABlACkUTABpAGIAQwBvAG0AcABhAG4AeQAqHlUAcABkAGEAdABlAFAAcgBvAHYAaQBkAGUAcgBzACs4UwB5AHMAdABlAG0ALgBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBIAGEAcwBoAHQAYQBiAGwAZQAsEnYAaQBzAHUAZQBsAGUAbQBzAC1INgBjAGIAMQBjAGQAZQAxAC0AZAA1AGQAYwAtADQAYQAzAGIALQA5ADAANQA0AC0AMgAxAGYAYQA3ADUANgBhADMAZgBhADQALihJAG4AdABlAHIAZgBhAGMAZQBWAGUAcgBzAGkAbwBuAEkAbgBmAG8AL0x7AGMANgAxADEAZQA0ADAAMAAtADcAZgBiADkALQA0AGMAMwA1AC0AYgA5AGEAYwAtADQAZQAzADEANABiADUAOQA5ADYANAAzAH0AMBhNAGEAagBvAHIAVgBlAHIAcwBpAG8AbgAxGE0AaQBuAG8AcgBWAGUAcgBzAGkAbwBuADIMTABlAGcAYQBjAHkAMzBMAGEAbgBnAHUAYQBnAGUATQBvAGQAZQBsAFYAZQByAHMAaQBvAG4ASQBuAGYAbwA0MEwAbwBhAGQATABpAGIAcgBhAHIAaQBlAHMASQBuAHQAbwBQAHIAbwBqAGUAYwB0ADUaQwBvAG0AcABhAHQAaQBiAGkAbABpAHQAeQDQAAIaA9ADAS0E0AUGGgfQBwgaAUUHCQjQAAkaBEUKCwQDAAAABQAAAA0AAAAAAAAA0AwLrQIAAADQDQEtDtAPAS0Q0AAJGgRFCgsEAwAAAAUAAAANAAAAKAAAANAMC60BAAAA0A0BLRHQDwEtENAACRoERQoLBAMAAAAFAAAADQAAAAAAAADQDAutAgAAANANAS0S0A8BLRDQAAkaBEUKCwQDAAAABQAAAA0AAAAUAAAA0AwLrQIAAADQDQEtE9APAS0Q0AAJGgRFCgsEAwAAAAUAAAANAAAAAAAAANAMC60CAAAA0A0BLRTQDwEtENAACRoERQoLBAMAAAAFAAAADQAAAAAAAADQDAutAgAAANANAS0V0A8BLRDQAAkaBEUKCwQDAAAABQAAAA0AAAAAAAAA0AwLrQIAAADQDQEtFtAPAS0X0AAJGgRFCgsEAwAAAAUAAAANAAAAKAAAANAMC60EAAAA0A0BLRjQDwEtENAZGq0BRRscAdAAHBoCRR0LBAMAAAAFAAAADQAAAAAAAADQHh8tINAhIhoCRSMkAtAAJRoFRQoLBAMAAAADAAAAAAAAAAoAAADQJgutAAAAANADAS0n0CgBLRHQKQEtENAAJRoFRQoLBAMAAAADAAAAAAAAAAoAAADQJgutAQAAANADAS0n0CgBLRHQKQEtEJoqKwFFAAEC0AABLSzQAAEtF9AAHy0t0C4vGgPQMAutAQAAANAxC60XAAAA0DIarQDQMy8aA9AwC60CAAAA0DELrQMAAADQMhqtANA0Gq0A0DUarQA=</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+        </Data>
+        <TypeList>
+          <Type n="ArrayList">System.Collections.ArrayList</Type>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Group">{daecd4be-1e2b-4335-a125-4a1ac83ea49f}</Type>
+          <Type n="GroupList">{bf4dffda-f055-446d-9d7a-5f126720896b}</Type>
+          <Type n="Guid">System.Guid</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="Int32">System.Int32</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+          <Type n="User">{cd83029e-13b0-491e-9e4b-921adda0d86b}</Type>
+          <Type n="UserAuthentication">{3635a671-97f5-41bb-9e29-0ebb9795975c}</Type>
+          <Type n="UserList">{9fe6b547-6bc8-4f11-b589-b517860c5891}</Type>
+        </TypeList>
+      </XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

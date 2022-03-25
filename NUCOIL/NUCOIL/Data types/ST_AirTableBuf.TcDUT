@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_AirTableBuf" Id="{4537264e-d3ee-4d9d-b4ff-f61d5f8c7f1d}">
+    <Declaration><![CDATA[TYPE ST_AirTableBuf :
+STRUCT
+	Table	: ARRAY [1..AirNo, 0..1999] OF BOOL;
+	OK		: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

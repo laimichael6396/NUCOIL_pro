@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_IOSwitch" Id="{c97da4da-d4fe-400e-871f-c0517f2de2f4}">
+    <Declaration><![CDATA[TYPE ST_IOSwitch :
+STRUCT
+	SaftyEnable			:BOOL;
+	SafetyLockDisable   :BOOL;
+	GlobalTouchEnable   :BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

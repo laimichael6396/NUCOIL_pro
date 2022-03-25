@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="ManMove" Id="{ee401b17-b045-4473-a815-4fa455e3c130}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM ManMove
+VAR
+	ManMovState		: ARRAY[1..No] OF INT:=[No(MANMOVEENUM.S_MANINITIAL)];
+	Stop			: BOOL;
+	MPGIsSet		: BOOL:=FALSE;
+	JogBoxIsSet		: BOOL;
+	MinPosition		: ARRAY[1..No] OF LREAL;
+	MaxPosition		: ARRAY[1..No] OF LREAL;
+	FirstTime		: BOOL:= TRUE;
+	idx				: INT;
+	IsMpgMove		: BOOL:=FALSE;
+	FeederCount		: INT:=0;
+	AxisPos 			: ARRAY[1..No] OF REAL:=[No(0)];
+	AxisLPos 		: ARRAY[1..No] OF REAL:=[No(0)];
+	AxisPosByDist	: ARRAY[1..No] OF REAL:=[No(0)];
+	UnitPos			: ARRAY[1..No] OF REAL:=[No(0)];
+	RelativeMOVE	: RelativeMOVE;
+	RelativeMOVE2	: RelativeMOVE2;
+	ManMovCal		: ManMovCal;
+	ReadActualPosition: MC_ReadActualPosition;
+	RM1Busy		: ARRAY[1..No] OF BOOL:=[No(FALSE)];
+	RM2Busy		: ARRAY[1..No] OF BOOL:=[No(TRUE)];
+
+	Pos				: ARRAY[1..No] OF REAL:=[No(0)];
+	Dist				: ARRAY[1..No] OF REAL:=[No(0)];
+	Vel				: ARRAY[1..No] OF REAL:=[No(0)];
+	Acc				: ARRAY[1..No] OF REAL:=[No(0)];
+	Jerk 			: ARRAY[1..No] OF REAL:=[No(0)];
+
+	AddFeederDist	: REAL;
+	AddFeederV		: REAL;
+	AddFeederAcc	: REAL;
+	AddFeederJerk	: REAL;
+
+	mem			: ARRAY[1..1000] OF REAL;
+	memIdx			: INT := 1;
+	count			: INT:=1;
+	FirstPos			: ARRAY[1..No] OF LREAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF State = ENUMSTATE.S_MANMOV OR State = ENUMSTATE.S_TROSHO_MANMOV THEN
+	IF FirstTime THEN
+		FirstTime := FALSE;
+		(*給定手動起始位置*)
+		FOR idx := 1 TO No DO
+			Pos[idx] := FirstPos[idx];
+		END_FOR
+		(*初始化電子凸輪狀態Decouple*)
+		FOR idx:=1 TO No DO
+			Cam[idx].CamOut(Execute := TRUE, Slave:=Axis[idx].Axis);
+		END_FOR
+	END_IF
+	(*------------------------手輪---------------------------*)
+	IF MPGIsSet THEN
+		IF AxisIsOn[CurManMovAxis] THEN
+			IF Mpg_PositiveMove = TRUE THEN
+				IsMpgMove :=TRUE;
+				AxisManMove[CurManMovAxis].Execute := TRUE;
+				IF AxisManMove[CurManMovAxis].DistByUnit < 0 THEN
+					AxisManMove[CurManMovAxis].DistByUnit := -AxisManMove[CurManMovAxis].DistByUnit;
+				END_IF
+			ELSIF Mpg_NegativeMove = TRUE THEN
+				IsMpgMove :=TRUE;
+				AxisManMove[CurManMovAxis].Execute := TRUE;
+				IF AxisManMove[CurManMovAxis].DistByUnit > 0 THEN
+					AxisManMove[CurManMovAxis].DistByUnit := -AxisManMove[CurManMovAxis].DistByUnit;
+				END_IF
+			ELSIF Inputstate.Mpg_PositiveBtn = TRUE THEN
+				IsMpgMove :=TRUE;
+				AxisManMove[CurManMovAxis].Execute := TRUE;
+				IF AxisManMove[CurManMovAxis].DistByUnit < 0 THEN
+					AxisManMove[CurManMovAxis].DistByUnit := -AxisManMove[CurManMovAxis].DistByUnit;
+				END_IF	
+			ELSIF Inputstate.Mpg_NegativeBtn = TRUE THEN
+				IsMpgMove :=TRUE;
+				AxisManMove[CurManMovAxis].Execute := TRUE;
+				IF AxisManMove[CurManMovAxis].DistByUnit > 0 THEN
+					AxisManMove[CurManMovAxis].DistByUnit := -AxisManMove[CurManMovAxis].DistByUnit;
+				END_IF
+			ELSIF IsMpgMove = TRUE THEN
+				IsMpgMove :=FALSE;
+				AxisManMove[CurManMovAxis].Execute := FALSE;
+			END_IF
+		END_IF
+	(*------------------------吋動盒-------------------------*)
+	ELSIF JogBoxIsSet THEN
+		IF Inputstate.plusY THEN
+			AxisManMove[FeederNo].Execute := TRUE;
+			IF AxisManMove[FeederNo].DistByUnit < 0 THEN
+				AxisManMove[FeederNo].DistByUnit := -AxisManMove[FeederNo].DistByUnit;
+			END_IF
+		ELSIF Inputstate.negY THEN
+			AxisManMove[FeederNo].Execute := TRUE;
+			IF AxisManMove[FeederNo].DistByUnit > 0 THEN
+				AxisManMove[FeederNo].DistByUnit := -AxisManMove[FeederNo].DistByUnit;
+			END_IF
+		ELSIF Inputstate.plusA THEN
+			AxisManMove[RotateWNo].Execute := TRUE;
+			IF AxisManMove[RotateWNo].DistByUnit < 0 THEN
+				AxisManMove[RotateWNo].DistByUnit := -AxisManMove[RotateWNo].DistByUnit;
+			END_IF
+			AxisManMove[FeederNo].Execute := TRUE;
+			IF AxisManMove[FeederNo].DistByUnit < 0 THEN
+				AxisManMove[FeederNo].DistByUnit := -AxisManMove[FeederNo].DistByUnit;
+			END_IF
+		ELSIF Inputstate.negA THEN
+			AxisManMove[RotateWNo].Execute := TRUE;
+			IF AxisManMove[RotateWNo].DistByUnit > 0 THEN
+				AxisManMove[RotateWNo].DistByUnit := -AxisManMove[RotateWNo].DistByUnit;
+			END_IF
+			AxisManMove[FeederNo].Execute := TRUE;
+			IF AxisManMove[FeederNo].DistByUnit > 0 THEN
+				AxisManMove[FeederNo].DistByUnit := -AxisManMove[FeederNo].DistByUnit;
+			END_IF
+		ELSE
+			AxisManMove[RotateWNo].Execute := FALSE;
+			AxisManMove[FeederNo].Execute := FALSE;
+			JogBoxIsSet := FALSE;
+		END_IF
+	END_IF
+
+
+	IF Stop THEN
+		Stop := FALSE;
+		FOR idx:= 1 TO No DO
+			AxisManMove[idx].Execute := FALSE;
+		END_FOR
+	END_IF
+
+	FOR idx:= 1 TO No DO
+		IF AxisManMove[idx].DistByUnit <>0 THEN
+			ReadActualPosition(Enable:=TRUE, Axis:=Axis[idx].Axis);
+			AxisPos[idx] := ReadActualPosition.Position;
+			AxisPosByDist[Idx]   := AxisPosByDist[Idx] +  AxisPos[Idx] - AxisLPos[Idx];
+			AxisLPos[Idx]     	    := AxisPos[Idx];
+
+			CASE ManMovState[idx] OF
+				MANMOVEENUM.S_MANINITIAL:
+					IF AxisManMove[idx].Execute THEN
+						(*Override := 100;(*手動調回100%*)*)
+						(*第一個相對運動判斷目前是否為靜止*)
+							AxisPosByDist[idx]      := 0;
+							ManMovCal(
+								Axis 	:= idx,
+								Pos		:= Pos[idx],
+								MinPos	:= MinPosition[idx],
+								MaxPos  := MaxPosition[idx],
+								NPos	=>Pos[idx],
+								Dist		=>Dist[idx],
+								Vel     	=>Vel[idx],
+								Acc     	=>Acc[idx],
+								Jerk   	=>Jerk[idx]
+							);
+
+							IF Dist[idx] <> 0 THEN
+								RelativeMOVE(
+									MoveAxisIdx		:= idx,
+									MoveDistance	:= Dist[idx],
+									MoveVelocity		:= Vel[idx],
+									MoveAcceleration:= Acc[idx]*0.1,
+									MoveDeceleration:= Acc[idx]*2,
+									MoveJerk	   	 := Jerk[idx]
+								);
+								(*翻線捕線*)
+								IF idx = RotateWNo THEN
+									AddFeederDist  :=  Dist[idx] * RWAddFeederRatio;
+									AddFeederV       :=  ABS( Vel[idx] * RWAddFeederRatio );
+									AddFeederAcc  :=  ABS(AddFeederV/AxisManMove[idx].AccTime);
+									AddFeederJerk :=  AddFeederAcc/0.0001;
+									RelativeMOVE(
+										MoveAxisIdx		:= FeederNo,
+										MoveDistance	:= AddFeederDist,
+										MoveVelocity		:= AddFeederV ,
+										MoveAcceleration := AddFeederAcc*0.1,
+										MoveDeceleration := AddFeederAcc*2,
+										MoveJerk	   	 := AddFeederJerk,
+									);
+								END_IF
+								ManMovState[idx] := MANMOVEENUM.S_MANMOVE;
+							END_IF
+					END_IF
+
+				MANMOVEENUM.S_MANMOVE:
+					IF AxisManMove[idx].Execute THEN
+
+						(*起始動作送完接著後續連續運動*)
+						IF ABS(AxisPosByDist[Idx])  >= ABS(Dist[idx]* 9.0/10.0) THEN
+
+							 IF ABS(AxisPosByDist[Idx])  >= ABS(Dist[idx]) THEN
+								IF AxisManMove[CurManMovAxis].DistByUnit > 0 THEN
+									AxisPosByDist[Idx] := AxisPosByDist[Idx] - Dist[idx];
+								ELSE
+									AxisPosByDist[Idx] := AxisPosByDist[Idx] + Dist[idx];
+								END_IF
+							END_IF
+
+
+							IF  (Axis[idx].fbMC_MoveRelative[1].Busy=FALSE) AND Axis[idx].fbMC_MoveRelative[2].Busy THEN
+
+								AxisPosByDist[idx]      := 0;
+
+								ManMovCal(
+									Axis 	:= idx,
+									Pos		:= Pos[idx],
+									MinPos	:= MinPosition[idx],
+									MaxPos  := MaxPosition[idx],
+									NPos	=>Pos[idx],
+									Dist		=>Dist[idx],
+									Vel     	=>Vel[idx],
+									Acc     	=>Acc[idx],
+									Jerk    	=>Jerk[idx]
+								);
+								IF Dist[idx] <> 0 THEN
+									RelativeMOVE(
+										MoveAxisIdx		:= idx,
+										MoveDistance	:= Dist[idx],
+										MoveVelocity		:= Vel[idx],
+										MoveAcceleration:= Acc[idx]*0.1,
+										MoveDeceleration:= Acc[idx]*2,
+										MoveJerk	 	:= Jerk[idx]
+										);
+									(*翻線捕線*)
+									IF idx = RotateWNo THEN
+										AddFeederDist  :=  Dist[idx] * RWAddFeederRatio;
+										AddFeederV       :=  ABS( Vel[idx] * RWAddFeederRatio);
+										AddFeederAcc  :=  ABS(AddFeederV/AxisManMove[idx].AccTime);
+										AddFeederJerk :=  AddFeederAcc/0.0001;
+										RelativeMOVE(
+											MoveAxisIdx		:= FeederNo,
+											MoveDistance	:= AddFeederDist,
+											MoveVelocity		:= AddFeederV ,
+											MoveAcceleration := AddFeederAcc*0.1,
+											MoveDeceleration := AddFeederAcc*2,
+											MoveJerk	   	 := AddFeederJerk,
+										);
+									END_IF
+								END_IF
+							ELSIF Axis[idx].fbMC_MoveRelative[1].Busy AND (Axis[idx].fbMC_MoveRelative[2].Busy=FALSE) THEN
+
+								AxisPosByDist[idx]      := 0;
+
+								ManMovCal(
+									Axis 	:= idx,
+									Pos		:= Pos[idx],
+									MinPos	:= MinPosition[idx],
+									MaxPos  := MaxPosition[idx],
+									NPos	=>Pos[idx],
+									Dist		=>Dist[idx],
+									Vel     	=>Vel[idx],
+									Acc     	=>Acc[idx],
+									Jerk   	 =>Jerk[idx]
+								);
+								IF Dist[idx] <> 0 THEN
+									RelativeMOVE2(
+										MoveAxisIdx		:= idx,
+										MoveDistance	:= Dist[idx],
+										MoveVelocity		:= Vel[idx],
+										MoveAcceleration:= Acc[idx]*0.1,
+										MoveDeceleration:= Acc[idx]*2,
+										MoveJerk	  	:= Jerk[idx]
+									);
+									(*翻線捕線*)
+									IF idx = RotateWNo THEN
+										AddFeederDist  :=  Dist[idx] * RWAddFeederRatio;
+										AddFeederV       := ABS( Vel[idx] * RWAddFeederRatio);
+										AddFeederAcc  :=  ABS(AddFeederV/AxisManMove[idx].AccTime);
+										AddFeederJerk :=  AddFeederAcc/0.0001;
+										RelativeMOVE2(
+											MoveAxisIdx		:= FeederNo,
+											MoveDistance	:= AddFeederDist,
+											MoveVelocity		:= AddFeederV ,
+											MoveAcceleration := AddFeederAcc*0.1,
+											MoveDeceleration := AddFeederAcc*2,
+											MoveJerk	   	 := AddFeederJerk,
+										);
+									END_IF
+								END_IF
+
+							END_IF
+						END_IF
+					ELSE
+						ManMovState[idx] := MANMOVEENUM.S_MOVESTOP;
+					END_IF
+
+				MANMOVEENUM.S_MOVESTOP:
+					IF (Axis[idx].fbMC_MoveRelative[1].Busy=FALSE) AND (Axis[idx].fbMC_MoveRelative[2].Busy=FALSE) THEN
+						ManMovState[idx] := MANMOVEENUM.S_MANINITIAL;
+					END_IF
+			END_CASE
+		END_IF
+	END_FOR
+
+
+
+
+
+(*-----------------------若不是手動----------------------*)
+ELSE
+	FirstTime := TRUE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="ManMove">
+      <LineId Id="40" Count="260" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

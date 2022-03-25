@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="PPMCal" Id="{c26377a1-6d72-439a-be6f-2c3b828bc2b4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PPMCal
+VAR_INPUT
+	Clear	: BOOL;
+	CurTime  : UDINT;
+END_VAR
+VAR_OUTPUT
+	PPM	:REAL;
+END_VAR
+VAR
+	OrigTime:UDINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Clear THEN
+	Clear 	:= FALSE;
+	PPM	:=  0;
+	OrigTime := 0;
+ELSE
+	PPM := 1000.0/UDINT_TO_REAL(CurTime - OrigTIme) * 60.0;
+	OrigTIme := CurTime;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="PPMCal">
+      <LineId Id="11" Count="7" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

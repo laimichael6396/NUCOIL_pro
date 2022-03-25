@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_CheckInfoData" Id="{e79203be-f807-40ac-ae4b-1a10173868d1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_CheckInfoData
+VAR_INPUT
+	Decimal		: INT;
+END_VAR
+VAR_OUTPUT
+	IsError	    :BOOL;
+END_VAR
+VAR
+	count		: INT;
+	Hex0		: DWORD;
+	Hex1		: DWORD;
+	Hex2		: DWORD;
+	Hex3		: DWORD;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[count := 0;
+Hex0:= 0; Hex1:= 0; Hex2:=0; Hex3:=0;
+WHILE Decimal > 0 DO
+	CASE count OF
+		0:
+			Hex0 := Decimal MOD 16;
+		1:
+			Hex1 := Decimal MOD 16;
+		2:
+			Hex2 := Decimal MOD 16;
+		3:
+			Hex3 := Decimal MOD 16;
+	END_CASE;
+	Decimal := Decimal / 16;
+	count := count + 1;
+END_WHILE
+
+IF Hex0 <> 8 OR Hex1 <> 0 OR Hex2 <> 0 OR Hex3 <> 0 THEN
+	IsError := TRUE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_CheckInfoData">
+      <LineId Id="14" Count="19" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

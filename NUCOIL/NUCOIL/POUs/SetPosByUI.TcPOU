@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="SetPosByUI" Id="{9cd913a7-d64d-4130-ae6f-5f6692c92c89}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM SetPosByUI
+VAR
+	SetPosST	: ST_SetPosByUI;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Axis[SetPosST.Axis].fbMC_SetPosition(
+	Execute	:= SetPosST.Execute,
+	Position	:= SetPosST.Position,
+	Axis		:= Axis[SetPosST.Axis].Axis
+);
+SetPosST.Execute := FALSE;	]]></ST>
+    </Implementation>
+    <LineIds Name="SetPosByUI">
+      <LineId Id="68" Count="1" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

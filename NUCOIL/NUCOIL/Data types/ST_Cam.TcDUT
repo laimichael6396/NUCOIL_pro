@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_Cam" Id="{89fde211-d684-4aa8-a269-785ccd251c2e}">
+    <Declaration><![CDATA[TYPE ST_Cam :
+STRUCT
+	CamIn			: MC_CamIn_V2;
+	CamOut			: MC_CamOut;
+	TableSelect   		: MC_CamTableSelect;
+	TableSelect2		: MC_CamTableSelect;
+	Table	         		: MC_CAM_REF;
+	Table2	         		: MC_CAM_REF;
+	MotionFunction 	: ARRAY[1..10] OF MC_MotionFunctionPoint;
+	Scaling 			: ST_CamScalingData;
+	Options			:ST_CamInOptions_V2;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="AlarmListClear" Id="{8124c19c-704e-4b78-9a10-75eceb853527}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AlarmListClear
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+AlarmList.Reset := FALSE;
+AlarmList.OilError := FALSE;
+AlarmList.ExFeederError := FALSE;
+AlarmList.SafetyError := FALSE;
+AlarmList.EMGStop := FALSE;
+AlarmList.FAlarm_1370 := FALSE;
+AlarmList.ExDeviceError := FALSE;]]></ST>
+    </Implementation>
+    <LineIds Name="AlarmListClear">
+      <LineId Id="7" Count="7" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

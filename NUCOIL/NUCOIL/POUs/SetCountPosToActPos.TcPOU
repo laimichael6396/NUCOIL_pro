@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="SetCountPosToActPos" Id="{f8a1afd8-73bc-43b9-a873-a29c89f200e9}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM SetCountPosToActPos
+VAR
+	idx 				: INT;
+	Trig				: ARRAY [1..No] OF R_TRIG;
+	SetComplete		: ARRAY [1..No] OF BOOL:=[No(FALSE)];
+	SetCount			: INT:=0;
+	CompleteCount	: INT:=0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+FOR idx:=1 TO No DO
+
+	IF SetAxisPosByCountPos[idx] THEN
+		Trig[idx](CLK:=TRUE);
+		Axis[idx].fbMC_SetPosition(
+			Execute	:= Trig[idx].Q,
+			Position	:= AxisCountPosByInput[idx],
+			Axis		:= Axis[idx].Axis
+		);
+
+		IF Axis[idx].fbMC_SetPosition.Done THEN
+			SetComplete[idx] := TRUE;
+		END_IF
+	END_IF
+
+END_FOR
+
+SetCount		    := 0;
+CompleteCount := 0;
+
+FOR idx:=1 TO No DO
+	IF SetAxisPosByCountPos[idx] THEN
+		SetCount := SetCount + 1;
+	END_IF
+	IF SetComplete[idx] THEN
+		CompleteCount := CompleteCount + 1;
+	END_IF
+END_FOR
+
+IF CompleteCount = SetCount AND SetCount<>0 THEN
+	FOR idx:=1 TO No DO
+		SetAxisPosByCountPos[idx] := FALSE;
+		SetComplete[idx] := FALSE;
+		Trig[idx](CLK:=FALSE);
+	END_FOR
+	UISetPosAllComplete := TRUE;
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="SetCountPosToActPos">
+      <LineId Id="8" Count="38" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

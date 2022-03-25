@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_IsAdjustTouch" Id="{581e2d0f-098b-4a18-96a1-be32d18a5b73}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_IsAdjustTouch
+VAR_INPUT
+	touchNo			:INT;
+	CurrentTableIdx :DINT;
+END_VAR
+VAR_OUTPUT
+	Yes				:BOOL;
+	AdjustIdx		:INT;
+END_VAR
+VAR
+	touchAdjustIdx	:INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+AdjustIdx := -1;
+FOR touchAdjustIdx := 1 TO TouchAdjustNo DO
+	IF TouchAdjustConfig[TouchAdjustIdx].Enable AND touchNo = TouchAdjustConfig[TouchAdjustIdx].TouchNo
+	AND CurrentTableIdx >= TouchAdjustConfig[TouchAdjustIdx].TouchStartIdx AND CurrentTableIdx <= TouchAdjustConfig[TouchAdjustIdx].TouchEndIdx THEN
+		AdjustIdx := TouchAdjustIdx;
+	END_IF
+END_FOR
+IF AdjustIdx <> -1 THEN
+	Yes := TRUE;
+ELSE
+	Yes := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_IsAdjustTouch">
+      <LineId Id="12" Count="12" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

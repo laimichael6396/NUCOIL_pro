@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_CloseAir" Id="{b107784f-5fa3-429f-b14e-06e0264bdc60}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_CloseAir
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	idx				: INT:=1;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+FOR idx:= 1 TO AirNo DO
+	AirIsOpen[idx] := FALSE;
+END_FOR
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_CloseAir">
+      <LineId Id="8" Count="4" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

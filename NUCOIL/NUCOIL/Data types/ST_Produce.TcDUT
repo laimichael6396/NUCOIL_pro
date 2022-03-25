@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_Produce" Id="{b52b254c-c77b-428e-a445-e815828fe564}">
+    <Declaration><![CDATA[TYPE ST_Produce :
+STRUCT
+	Start				: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)] ;
+	End				: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	Dist				: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	Velocity			: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	TPhase1			: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	TPhase2			: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	Acceleration		: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	Deceleration		: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+	Jerk				: ARRAY [0..MAX_ARRAY] OF LREAL :=[0,MAX_ARRAY(0)];
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

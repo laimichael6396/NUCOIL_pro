@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_TouchProbe" Id="{6fbcad22-ec97-4584-ac4d-d18a9204fcc8}">
+    <Declaration><![CDATA[TYPE ST_TouchProbe :
+STRUCT
+	Execute			: BOOL:=FALSE;
+	WindowOnly		: BOOL:=FALSE;
+	FirstPosition		: LREAL:=0;
+	LastPosition 		: LREAL:=0;
+	Trigger_Ref	         : TRIGGER_REF ;
+
+	RecordPosition	: LREAL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

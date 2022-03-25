@@ -1,0 +1,1519 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="Produce" Id="{3d0ceef7-4e41-4642-b73a-791c9bd9a287}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Produce
+VAR
+	ENUMPRODUCESTATE	:(S_FillAxisTable, S_FillSubTable, S_FillTouchAdjustTable, S_FillIOTable, S_FillSubIOTable,  S_EnableExtSetPoint, S_WaitExtSetPoint, S_Run);
+	ProduceState		: INT;
+	idx					: INT ;
+	CloseIO				: FB_CloseIO;
+	StartProNum			: UDINT;
+	ProduceTimer		: UDINT:=0;
+	ProduceNum			: UDINT:=1;
+	ProduceCurNum		: UDINT:=0;
+	UIStop				: BOOL:=FALSE;
+	FlashModeOn		: BOOL;
+	PPM				: REAL;
+	PPMCal				: PPMCal;
+	Speed				: LREAL;
+	SpeedUPToOverride	: BOOL;
+	SpeedCtrlAccTimer	: TON;
+	SpeedCtrlDecTimer	: TON;
+	SpeedAccDccTime 	: TIME := T#300ms;
+
+
+	RepeatA				: DINT;
+	RepeatB				: DINT;
+	JumpFirstTime		: BOOL;
+	StopTiming1			: DINT;
+	StopTiming2			: DINT;
+	JumpTiming			: DINT;
+	TotalTimeByMs		: LREAL;
+	CurrentTableIdx		: DINT;
+	CurrentTableOffset	: REAL;
+	LastTableOffset		: REAL;
+	RepeatA_FeederIdx	: INT;
+	Idx0FirstTime			: BOOL;
+
+	axisIdx				: INT;
+	touchIdx			: INT;
+	airIdx				: INT;
+	SendOffset			: UDINT := 0;
+	touchTableFill 		: BOOL := FALSE;
+	airTableFill  		: BOOL := FALSE;
+	exFSpdUpTableFill	: BOOL := FALSE;
+	receiveAllBuf		: BOOL := FALSE;
+	TouchBeforeStart	: BOOL:= FALSE;
+	getSubNo			: INT;
+
+	IsExtSetPointDone	: ARRAY [1..No] OF BOOL;
+	IsSetPointComplete 	: BOOL;
+	TableOffsetPos		: ARRAY [1..No] OF  LREAL;
+	OldPosition			: ARRAY [1..No] OF LREAL;
+	ExtVelocity			: ARRAY [1..No] OF LREAL;
+	OldVelocity			: ARRAY [1..No] OF LREAL;
+	ExtAcceleration		: LREAL;
+	ExtDirection		: DINT;
+	newPos				: LREAL;
+
+	ModuloBase			: ARRAY [1..No] OF LREAL;
+
+	Feeder				: ST_FeederInProduce;
+	FeederStartIdx		: ARRAY [0..999] OF DINT;
+	FeederEndIdx		: ARRAY [0..999] OF DINT;
+	FeederIdx			: INT := 0;
+	FTouchShowPos		: LREAL;
+	TouchDist			: ARRAY [1.. TouchNo] OF LREAL;
+	IsTouch				: BOOL;
+	TouchOpenNo		: UINT;
+	TouchMissNum		: UDINT := 0;
+	TouchMissSetNum		: UDINT := 0;
+	TouchMiss			: BOOL := FALSE;
+	TouchConfig			: ARRAY [1..TouchNo] OF ST_TouchConfig;
+	TouchConfigIdx		: ARRAY [1..TouchNo] OF  INT;
+	RepeatA_TouchConfigIdx  : ARRAY [1..TouchNo] OF  INT;
+	ThisTurnTouchMiss	: BOOL;
+	ThisTurnTouchMissShow   : ARRAY [1..TouchNo] OF BOOL;
+	FNeedHoldPos		: FB_FNeedHoldPos;
+	TouchEnd			: FB_TouchEnd;
+	InAnotherTouch		: FB_InAnotherTouch;
+	IsPreTouch			: BOOL;
+	PreTouchShow        : ARRAY [1..TouchNo] OF BOOL;
+	GlobalTouchShow     : ARRAY [1..TouchNo] OF BOOL;
+	IsOverUpBound		: BOOL;
+	IsBelowDownBound	: BOOL;
+
+	IsAdjustAxis		: FB_IsAdjustAxis;
+	IsAdjustTouch		: FB_IsAdjustTouch;
+	TouchAdjustIdx	    : INT;
+	AdjustCounter		: ARRAY [1..TouchAdjustNo] OF REAL;
+	AdjustCounterBuf	: ARRAY [1..TouchAdjustNo] OF REAL;
+	AdjustPos           : LREAL;
+	AdjustNextPos       : LREAL;
+
+	RunSubProgram		: BOOL;
+	RunSubNo			: INT;
+	SubInFirstTime		: BOOL;
+	SubTableIdx			: DINT;
+	SubTableOffset		: REAL;
+	FInSubStartPos		: LREAL;
+	FInSubPos			: LREAL;
+
+	G5Config				: ARRAY [1..G5ConfigNo] OF ST_G5Config;
+	G5Status				: ST_G5Status;
+
+	OilStrokeCount : ARRAY[1..OilNo] OF UDINT; (*新增 判斷圈數*)
+
+	FirstAutoRun 			: BOOL;
+	CloseOil				: FB_CloseOil;
+
+	lState				:INT;
+	SpeedChanged		:BOOL;
+
+	IsHaveHook			: BOOL := FALSE;
+	HookAxisNo			: INT := -1;
+	IsHookMovable		: BOOL;
+
+	IsTouchWithF		: BOOL;
+
+	mem			: ARRAY [0..5000] OF LREAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+(*到達生產量*)
+IF  ( (ProduceCurNum=ProduceNum AND ProduceNum<>0) OR (ProduceCurNum=ProduceNum AND CurrentTableIdx = TotalTimeByMs AND TouchMissNum >= TouchMissSetNum AND TouchMissSetNum = 1 ) )
+     AND Producing THEN
+	FOR axisIdx:=1 TO No DO
+		Axis[axisIdx].DisableSetPointGenerator.Execute := TRUE;
+	END_FOR
+	State				   := ENUMSTATE.S_IDLE;(*狀態改回閒置*)
+		CloseIO(); (*關I/O*)
+	UIStop				   := FALSE;
+	Producing	       		   := FALSE;
+	ProFirstTime			   := TRUE;
+END_IF
+
+(*停機按鈕*)
+IF Producing AND Inputstate.StopCycle THEN
+	 UIStop := TRUE;
+END_IF
+IF NOT Producing THEN
+	UIStop := FALSE;
+END_IF
+IF UIStop THEN
+	ProduceNum := ProduceCurNum + 1;
+END_IF
+
+(*開始生產*)
+IF Producing  AND (ProduceCurNum<ProduceNum)  THEN
+	(*第一次進生產*)
+	IF ProFirstTime = TRUE THEN
+		(*初始化*)
+				Initial();
+	END_IF
+
+	CtrlSpeed();
+
+	CASE ProduceState OF
+
+		S_FillAxisTable:
+						FillAxisTable();
+
+		S_FillIOTable:
+						FillIOTable();
+
+		S_FillSubTable:
+						FillSubTable();
+
+		S_FillSubIOTable:
+						FillSubIOTable();
+
+		S_FillTouchAdjustTable:
+						FillTouchAdjustTable();
+
+		S_EnableExtSetPoint:
+						EnableExtSetPoint();
+
+		S_WaitExtSetPoint:
+						WaitExtSetPoint();
+
+		S_Run:
+
+			 IF State = ENUMSTATE.S_AUTO THEN (*判斷為自動時*)
+				IF FirstAutoRun = TRUE THEN
+					FOR idx:=1 TO OilNo DO
+						IF Oil[idx].Enable AND Oil[idx].OpenTime <> 0 THEN
+							Oil[idx].IsOpen := TRUE;
+						END_IF
+					END_FOR
+					FirstAutoRun := FALSE;
+				END_IF
+								OilFunc();
+			ELSE
+				IF FirstAutoRun = FALSE THEN
+					firstAutoRun := TRUE;
+										CloseOil();
+				END_IF
+			END_IF
+
+			ProduceTimer := ProduceTimer + 1;
+
+			(* 表一開始 初始*)
+			IF CurrentTableIdx = 0 AND Idx0FirstTime THEN
+				Idx0FirstTime 		:= FALSE;
+				(*如果翻線使用虛擬原點 會造成送線表開始有一個位移要扣掉*)
+				IF AxisTable1[FeederNo, 0] <> 0 THEN
+					Feeder.BasePos := Feeder.CurPos - AxisTable1[FeederNo, 0];
+				ELSE
+					Feeder.BasePos := Feeder.CurPos;
+				END_IF
+				FeederIdx 		:= 0;
+				Feeder.StillPos 	:= 0;
+				IsTouch 			:= FALSE;
+				IsPreTouch			:= FALSE;
+				TouchMiss 		:= FALSE;
+				ThisTurnTouchMiss := FALSE;
+				TouchOpenNo 	:= 0;
+				IsHookMovable		:= TRUE;
+				FOR touchIdx := 1 TO TouchNo DO
+					TouchDist[touchIdx]		 := 0;
+					TouchConfigIdx[touchIdx] := 0;
+					PreTouchShow[touchIdx]   := FALSE;
+					ThisTurnTouchMissShow[touchIdx] := FALSE;
+					GlobalTouchShow[touchIdx]   := FALSE;
+				END_FOR
+				FOR axisIdx := 1 TO No DO
+					IF AxesUseModulo[axisIdx] THEN
+						ModuloBase[axisIdx] :=  AxesModuloTurns[axisIdx]  *  AxesGradPerTurn[axisIdx] ;
+					END_IF
+				END_FOR
+				FOR TouchAdjustIdx := 1 TO TouchAdjustNo DO
+					AdjustCounter[TouchAdjustIdx] := AdjustCounter[TouchAdjustIdx] + AdjustCounterBuf[TouchAdjustIdx];
+					AdjustCounterBuf[TouchAdjustIdx] := 0;
+				END_FOR
+			END_IF
+
+			(*副程式*)
+			IF RunSubNo <= SubProgramNo
+			AND (SubProgramConfig[RunSubNo].Reaction = 1 OR SubProgramConfig[RunSubNo].Reaction = 2 AND ThisTurnTouchMiss)
+			AND SubProgramConfig[RunSubNo].TotalTableSize <> 0
+			AND CurrentTableIdx = SubProgramConfig[RunSubNo].StartIdx + 1 (*StartIdx 要+1開始 因為ThisTurnTouchMiss在StartIdx下一周期才會拿到*)
+			THEN
+
+				IF SubInFirstTime THEN
+					SubInFirstTime := FALSE;
+					SubTableOffset := CurrentTableOffset;
+					FInSubStartPos := Feeder.CurPos;
+				END_IF
+
+
+				(* 設定ExtPosition *)
+				FOR axisIdx := 1 TO No DO
+					IF AxisIsOn[axisIdx] THEN
+						(* 超過這條最後idx *)
+						IF (SubTableIdx + SubTableOffset) > (SubProgramConfig[RunSubNo].TotalTableSize - 1) THEN
+							TableOffsetPos[axisIdx]:= SubProgramTable[RunSubNo].AxisTable[axisIdx, SubTableIdx];
+						ELSE
+						(* idx在此表內 *)
+							TableOffsetPos[axisIdx]:= SubProgramTable[RunSubNo].AxisTable[axisIdx, SubTableIdx] + ( SubProgramTable[RunSubNo].AxisTable[axisIdx, SubTableIdx + 1] - SubProgramTable[RunSubNo].AxisTable[axisIdx, SubTableIdx] ) * SubTableOffset;
+						END_IF
+					END_IF
+				END_FOR
+
+								SubAirFunc();
+
+				FOR axisIdx := 1 TO No DO
+					IF AxisIsOn[axisIdx] THEN
+						(*送線處理*)
+						IF axisIdx = FeederNo THEN
+
+							FInSubPos := FInSubStartPos + TableOffsetPos[axisIdx];
+							ExtVelocity[axisIdx]:= (FInSubPos - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldPosition[axisIdx]:= FInSubPos;
+							ExtDirection := SEL(FInSubPos >= OldPosition[axisIdx], -1, 1);
+							ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+
+							(*Feed*)
+							MC_ExtSetPointGenFeed(
+								Position := FInSubPos,
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+
+						(*使用Modulo軸*)
+						ELSIF AxesUseModulo[axisIdx] THEN
+
+							newPos := TableOffsetPos[axisIdx] + ModuloBase[axisIdx];
+
+							ExtVelocity[axisIdx]:= (newPos - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldPosition[axisIdx]:= newPos;
+							ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+							ExtDirection := SEL(newPos >= OldPosition[axisIdx], -1, 1);
+
+							MC_ExtSetPointGenFeed(
+								Position := newPos,
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+
+						(*一般軸處理*)
+						ELSE
+							ExtVelocity[axisIdx]:= (TableOffsetPos[axisIdx] - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldPosition[axisIdx]:= TableOffsetPos[axisIdx];
+							ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+							ExtDirection := SEL(TableOffsetPos[axisIdx] >= OldPosition[axisIdx], -1, 1);
+
+							MC_ExtSetPointGenFeed(
+								Position := TableOffsetPos[axisIdx],
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+						END_IF
+					END_IF
+				END_FOR
+
+				SubTableOffset := SubTableOffset + Speed/100;
+				IF SubTableOffset >= 1 THEN
+					SubTableOffset := SubTableOffset - 1;
+					SubTableIdx := SubTableIdx + 1;
+				END_IF
+
+				IF SubTableIdx = SubProgramConfig[RunSubNo].TotalTableSize THEN
+					SubTableIdx 	:= 0;
+					SubInFirstTime := TRUE;
+					CurrentTableOffset := SubTableOffset;
+
+					IF SubProgramConfig[RunSubNo].Reaction = 2 THEN
+						Feeder.BasePos := Feeder.BasePos + TableOffsetPos[FeederNo] + (AxisTable1[FeederNo, CurrentTableIdx] - AxisTable1[FeederNo, LREAL_TO_DINT(TotalTimeByMs - 1)]);
+						CurrentTableIdx := LREAL_TO_DINT( TotalTimeByMs - 1);
+					ELSE
+						Feeder.BasePos := Feeder.BasePos + TableOffsetPos[FeederNo];
+						IF RunSubNo <= SubProgramNo THEN
+							(*重複地進入時間和副程式進入時間重疊 G5會記錄到舊的執行的副程式*)
+							IF G5Config[G5Status.CurIdx].ATime + 1 = CurrentTableIdx AND G5Status.ATimeSubNo = RunSubNo THEN
+								G5Status.ATimeSubNo := RunSubNo + 1;
+							END_IF
+							RunSubNo := RunSubNo + 1;
+						END_IF						
+					END_IF
+
+				END_IF
+
+			ELSE
+
+			(*主程式*)
+				(* 設定TableOffsetPos *)
+				FOR axisIdx := 1 TO No DO
+					IF AxisIsOn[axisIdx] THEN
+						(* 超過這條最後idx *)
+						IF (CurrentTableIdx +  CurrentTableOffset) > (TotalTimeByMs - 1) THEN
+							TableOffsetPos[axisIdx]:= AxisTable1[axisIdx, CurrentTableIdx];
+						ELSE
+						(* idx在此表內 *)
+							IsAdjustAxis(paxis := axisIdx, CurrentTableIdx := CurrentTableIdx);
+							IF IsAdjustAxis.Yes THEN
+								AdjustPos := AxisTable1[axisIdx, CurrentTableIdx] + TouchAdjustTable[IsAdjustAxis.AdjustIdx, CurrentTableIdx] * AdjustCounter[IsAdjustAxis.AdjustIdx];
+								AdjustNextPos := AxisTable1[axisIdx, CurrentTableIdx + 1] + TouchAdjustTable[IsAdjustAxis.AdjustIdx, CurrentTableIdx + 1] * AdjustCounter[IsAdjustAxis.AdjustIdx];
+								TableOffsetPos[axisIdx]:= AdjustPos + ( AdjustNextPos - AdjustPos ) * CurrentTableOffset;
+							ELSE
+								TableOffsetPos[axisIdx]:= AxisTable1[axisIdx, CurrentTableIdx] + ( AxisTable1[axisIdx, CurrentTableIdx + 1] - AxisTable1[axisIdx, CurrentTableIdx] ) * CurrentTableOffset;
+							END_IF
+						END_IF
+					END_IF
+				END_FOR
+
+				(* 送線設定 *)
+				IF AxisIsOn[FeederNo]THEN
+					IF CurrentTableIdx = FeederStartIdx[FeederIdx] OR CurrentTableIdx = FeederEndIdx[FeederIdx] THEN
+						Feeder.StillPos := AxisTable1[FeederNo, CurrentTableIdx];
+					END_IF
+				END_IF
+
+								TouchFunc();
+								AirFunc();
+								ExFeederFunc();
+				
+
+				(* 輸入執行動作ExtSetPointGenFeed *)
+				FOR axisIdx := 1 TO No DO
+					IF AxisIsOn[axisIdx] THEN
+						(*送線處理*)
+						IF axisIdx = FeederNo THEN
+
+							TouchEnd(CurrentIdx:=CurrentTableIdx, TouchConfig:=TouchConfig,TouchConfigIdx:=TouchConfigIdx);
+							(*有探到 最後調整基準點*)
+							IF TouchEnd.Yes AND (IsTouch OR IsPreTouch) THEN
+								IsTouch := FALSE;
+								IsPreTouch := FALSE;
+
+								(*基準點調整, 有送線動作才調整*)
+								IF IsTouchWithF THEN
+									IF Feeder.TouchFeederIdx <> FeederIdx THEN
+										Feeder.BasePos := Feeder.BasePos + (Feeder.TouchPos - TableOffsetPos[axisIdx]);
+										Feeder.TouchPos   := AxisTable1[FeederNo, FeederEndIdx[FeederIdx]] -
+															(AxisTable1[FeederNo, FeederEndIdx[Feeder.TouchFeederIdx]] - Feeder.TouchPos);
+									ELSIF Feeder.TouchFeederIdx = FeederIdx THEN
+										Feeder.BasePos := Feeder.BasePos + (Feeder.TouchPos - TableOffsetPos[axisIdx]);
+									END_IF
+								END_IF
+
+							END_IF
+
+														FeederPosSetting();
+														FeederVelAccSetting();
+
+							(*Feed*)
+							MC_ExtSetPointGenFeed(
+								Position := Feeder.CurPos,
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+						(*夾耳軸處理*)
+						ELSIF IsHaveHook AND axisIdx = HookAxisNo THEN
+							
+							IF IsHookMovable = FALSE THEN
+								newPos := OldPosition[axisIdx];
+							ELSE
+								newPos := TableOffsetPos[axisIdx] + ModuloBase[axisIdx];
+							END_IF
+							ExtVelocity[axisIdx]:= (newPos - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldPosition[axisIdx]:= newPos;
+							ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+							ExtDirection := SEL(newPos >= OldPosition[axisIdx], -1, 1);
+
+							MC_ExtSetPointGenFeed(
+								Position := newPos,
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+
+						(*使用Modulo軸*)
+						ELSIF AxesUseModulo[axisIdx] THEN
+
+							newPos := TableOffsetPos[axisIdx] + ModuloBase[axisIdx];
+
+							ExtVelocity[axisIdx]:= (newPos - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldPosition[axisIdx]:= newPos;
+							ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+							ExtDirection := SEL(newPos >= OldPosition[axisIdx], -1, 1);
+
+							MC_ExtSetPointGenFeed(
+								Position := newPos,
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+
+						(*一般軸處理*)
+						ELSE
+							ExtVelocity[axisIdx]:= (TableOffsetPos[axisIdx] - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldPosition[axisIdx]:= TableOffsetPos[axisIdx];
+							ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+							OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+							ExtDirection := SEL(TableOffsetPos[axisIdx] >= OldPosition[axisIdx], -1, 1);
+							//ExtDirection := SEL(TableOffsetPos[axisIdx] >= OldPosition[axisIdx], -1, 1);
+
+							MC_ExtSetPointGenFeed(
+								Position := TableOffsetPos[axisIdx],
+								Velocity := ExtVelocity[axisIdx],
+								Acceleration := ExtAcceleration,
+								Direction := ExtDirection,
+								Axis := Axis[axisIdx].Axis);
+						END_IF
+					END_IF
+				END_FOR
+
+				(* 目前送線動作結束 改idx*)
+				IF AxisIsOn[FeederNo]
+				AND CurrentTableIdx = FeederEndIdx[FeederIdx] + 1
+				AND FeederEndIdx[FeederIdx] <> 0 THEN		
+
+					FeederIdx := FeederIdx + 1;
+					TouchOpenNo := 0;
+					
+				END_IF
+
+				(* 探針動作結束 初始化 *)
+				FOR touchIdx := 1 TO TouchNo DO
+
+					IF CurrentTableIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+					AND TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]] <> 0 THEN
+						IsTouch := FALSE;
+						IsPreTouch := FALSE;
+						TouchConfigIdx[touchIdx] := TouchConfigIdx[touchIdx] + 1;
+					END_IF
+
+					IF TouchConfigIdx[touchIdx] > 0 THEN
+						IF CurrentTableIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx] - 1] + 1
+						AND TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx] - 1] <> 0 THEN
+							TouchMiss := FALSE;
+						END_IF
+					END_IF
+
+				END_FOR
+
+				(* 下一個探針動作的開始 先檢查是否探針前失誤 *)
+								TouchPreCheck();
+
+								NextCycleIdx();
+				
+								
+				NextSubProgram();
+
+			END_IF
+	END_CASE
+
+END_IF]]></ST>
+    </Implementation>
+    <Action Name="AirFunc" Id="{04b75b27-61e4-4843-ad10-3157453f1f61}">
+      <Implementation>
+        <ST><![CDATA[
+(*----------------Air----------------1,2,7,8是探針汽缸*)
+(*非測試編輯時跑表*)
+IF NOT (Inputstate.VRSwitch = FALSE AND State = ENUMSTATE.S_TEST) THEN
+	FOR airIdx := 1 TO AirNo DO
+		IF  airIdx <> 1 
+		AND airIdx <> 2 
+		AND airIdx <> 7
+		AND airIdx <> 8 
+		THEN
+			AirIsOpen[airIdx] := AirTable[airIdx, CurrentTableIdx];
+		END_IF
+	END_FOR
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CtrlSpeed" Id="{2002990e-07dd-4b91-86d8-3b37f2131446}">
+      <Implementation>
+        <ST><![CDATA[IF Inputstate.ExFeederError
+OR (IOSwitch.SaftyEnable AND 
+        (Inputstate.SafetyError OR Inputstate.SafetyError1 OR Inputstate.SafetyError2 OR Inputstate.SafetyError3 OR Inputstate.SafetyError4) 
+    ) 
+THEN
+    SpeedDownTo0 := TRUE;
+    IF SpeedUPToOverride THEN
+	    SpeedUPToOverride := FALSE;
+        SpeedCtrlAccTimer(IN:=FALSE);
+    END_IF
+END_IF
+
+
+IF lState <> State THEN
+    lState := State;
+    SpeedChanged := TRUE;
+END_IF
+
+IF SpeedUPToOverride THEN
+	(*Reset Timer*)
+	IF SpeedDownTo0 THEN
+		SpeedDownTo0 := FALSE;
+		SpeedCtrlDecTimer(IN:=FALSE);
+	END_IF
+    SpeedCtrlAccTimer(IN:=TRUE , PT:=SpeedAccDccTime , Q=> , ET=> );
+    Speed        := Override * TIME_TO_REAL(SpeedCtrlAccTimer.ET) / TIME_TO_REAL(SpeedCtrlAccTimer.PT); (* 0 -> 1 *)
+    IF SpeedCtrlAccTimer.Q THEN
+        SpeedCtrlAccTimer(IN:=FALSE);
+        SpeedUPToOverride := FALSE;
+    END_IF
+ELSIF SpeedDownTo0 THEN
+    SpeedCtrlDecTimer(IN:=TRUE , PT:=SpeedAccDccTime , Q=> , ET=> );
+    Speed        := Override * ( TIME_TO_REAL(SpeedCtrlDecTimer.PT) - TIME_TO_REAL(SpeedCtrlDecTimer.ET) ) / TIME_TO_REAL(SpeedCtrlDecTimer.PT); (* 1 -> 0 *)
+ELSE
+    IF SpeedChanged THEN
+        IF LREAL_TO_DINT(Speed * 1000.0/100.0) = LREAL_TO_DINT(Override * 1000.0/100.0) THEN
+            SpeedChanged := FALSE;
+        ELSIF Speed < Override THEN
+            Speed := Speed + 100.0/1000.0; (* 0->100% 用 1000ms *)
+        ELSIF Speed > Override THEN
+            Speed := Speed - 100.0/1000.0; (* 0->100% 用 1000ms *)
+        END_IF
+    ELSE
+        Speed := Override;
+    END_IF
+END_IF
+
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="EnableExtSetPoint" Id="{d8d62916-bdfb-4293-878b-6a6b3cc4e85b}">
+      <Implementation>
+        <ST><![CDATA[	
+
+FOR axisIdx := 1 TO No DO
+	IF AxisIsOn[axisIdx] THEN
+		Axis[axisIdx].EnableSetPointGenerator
+		(
+			Execute := TRUE,
+			Position := Axis[axisIdx].ActPos,
+			PositionType := POSITIONTYPE_ABSOLUTE,
+			Axis :=  Axis[axisIdx].Axis
+		);
+	END_IF
+END_FOR
+ProduceState := S_WaitExtSetPoint;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ExFeederFunc" Id="{ccbe7829-2ce0-47a1-95cc-b6b66b9f27e2}">
+      <Implementation>
+        <ST><![CDATA[
+(*-------ExFeederSpeedUp------*)
+IF State = ENUMSTATE.S_AUTO THEN
+	ExFeederSpeedUp := ExFSpdUpTable[CurrentTableIdx];
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FeederPosSetting" Id="{7787108b-78d6-4324-b153-2517d603bec9}">
+      <Implementation>
+        <ST><![CDATA[
+FNeedHoldPos(
+	IsTouch:= IsTouch,
+	IsPreTouch := IsPreTouch,
+	CurrentIdx:= CurrentTableIdx,
+	FeederIdx	:= FeederIdx,
+	FeederStartIdx:= FeederStartIdx,
+	FeederEndIdx:=  FeederEndIdx,
+	TouchConfig	    := TouchConfig,
+	TouchConfigIdx := TouchConfigIdx,
+ );
+
+(* 計算位置 *)
+IF FlashModeOn THEN
+
+	IF(CurrentTableIdx = RepeatA) THEN
+		(*閃電模式下，在A點是新的彈簧開始，根據offset進來次數不一定只會一次*)
+		IF JumpFirstTime THEN
+			JumpFirstTime := FALSE;
+			Feeder.StillPos 	 := AxisTable1[axisIdx, FeederStartIdx[FeederIdx]] ;
+			IF FNeedHoldPos.Yes = FALSE THEN
+				Feeder.BasePos 	 := Feeder.CurPos - ( AxisTable1[axisIdx, RepeatA - 1] + ( AxisTable1[axisIdx, RepeatA] - AxisTable1[axisIdx, RepeatA - 1] ) * LastTableOffset );
+			END_IF
+		END_IF	
+	ELSIF (CurrentTableIdx = JumpTiming) THEN
+		IF JumpFirstTime THEN
+			JumpFirstTime := FALSE;
+			IF FNeedHoldPos.Yes = FALSE THEN
+				Feeder.BasePos := Feeder.CurPos - ( AxisTable1[axisIdx, JumpTiming - 1] + ( AxisTable1[axisIdx, JumpTiming] - AxisTable1[axisIdx, JumpTiming - 1] ) * LastTableOffset );
+			END_IF	
+		END_IF
+	END_IF
+
+ELSIF CurrentTableIdx = G5Config[G5Status.CurIdx].ATime THEN
+
+	IF G5Status.JumpFirstTime THEN
+		G5Status.JumpFirstTime := FALSE;
+		Feeder.StillPos 	 := AxisTable1[axisIdx, FeederStartIdx[FeederIdx]] ;	
+		IF FNeedHoldPos.Yes = FALSE THEN
+			Feeder.BasePos 	 := Feeder.CurPos - ( AxisTable1[axisIdx, CurrentTableIdx ]  );
+		END_IF
+	END_IF
+	
+END_IF
+
+FSetCurPos();]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FeederVelAccSetting" Id="{9f04fb4c-989a-4b95-94d6-258d64c2d2da}">
+      <Implementation>
+        <ST><![CDATA[FNeedHoldPos(
+	IsTouch:= IsTouch,
+	IsPreTouch := IsPreTouch,
+	CurrentIdx:= CurrentTableIdx,
+	FeederIdx	:= FeederIdx,
+	FeederStartIdx:= FeederStartIdx,
+	FeederEndIdx:=  FeederEndIdx,
+	TouchConfig	    := TouchConfig,
+	TouchConfigIdx := TouchConfigIdx,
+);
+	
+(*計算速度,加速度,方向*)
+IF FNeedHoldPos.Yes THEN
+	ExtVelocity[axisIdx]:= 0;
+ELSE
+	ExtVelocity[axisIdx]:= (Feeder.CurPos - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+END_IF
+OldPosition[axisIdx]:= Feeder.CurPos;
+ExtDirection := SEL(Feeder.CurPos >= OldPosition[axisIdx], -1, 1);
+ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+OldVelocity[axisIdx]:= ExtVelocity[axisIdx];]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillAxisTable" Id="{5d4ef426-8bd6-4ffa-a533-8224a28c041d}">
+      <Implementation>
+        <ST><![CDATA[IF AxisTableBuf.OK THEN
+	FOR axisIdx := 1 TO No DO
+		FOR Idx := 0 TO 1999  DO
+			AxisTable1[axisIdx, idx + SendOffset] := AxisTableBuf.Table[axisIdx, idx];
+		END_FOR
+	END_FOR
+	SendOffset := SendOffset + 2000;
+	AxisTableBuf.OK := FALSE;
+	IF SendOffset >= TotalTimeByMs THEN
+		SendOffset := 0;
+		ProduceState := S_FillIOTable;
+	END_IF
+END_IF
+IsGetTableBuf :=AxisTableBuf.OK;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillIOTable" Id="{ead66720-7869-470a-b259-8bfad13a7ff0}">
+      <Implementation>
+        <ST><![CDATA[
+IsGetTableBuf := FALSE;
+ReceiveAllBuf := TRUE;
+IF TouchTableBuf.OK THEN
+	TouchTableBuf.OK := FALSE;
+	FOR touchIdx := 1 TO TouchNo DO
+		FOR Idx := 0 TO 1999  DO
+			TouchTable[touchIdx, idx + SendOffset] := TouchTableBuf.Table[touchIdx, idx];
+		END_FOR
+	END_FOR
+	TouchTableFill := TRUE;
+END_IF
+IsGetTableBuf := IsGetTableBuf OR TouchTableFill;
+ReceiveAllBuf := ReceiveAllBuf AND TouchTableFill;
+
+IF AirTableBuf.OK THEN
+	AirTableBuf.OK := FALSE;
+	FOR airIdx := 1 TO AirNo DO
+		FOR Idx := 0 TO 1999  DO
+			AirTable[airIdx, idx + SendOffset] := AirTableBuf.Table[airIdx, idx];
+		END_FOR
+	END_FOR
+	AirTableFill := TRUE;
+END_IF
+IsGetTableBuf := IsGetTableBuf OR AirTableFill;
+ReceiveAllBuf := ReceiveAllBuf AND AirTableFill;
+
+IF ExFSpdUpTableBuf.OK THEN
+	ExFSpdUpTableBuf.OK := FALSE;
+	FOR Idx := 0 TO 1999  DO
+		ExFSpdUpTable[idx + SendOffset] := ExFSpdUpTableBuf.Table[idx];
+	END_FOR
+	ExFSpdUpTableFill := TRUE;
+END_IF
+IsGetTableBuf := IsGetTableBuf OR ExFSpdUpTableFill;
+ReceiveAllBuf := ReceiveAllBuf AND ExFSpdUpTableFill;
+
+IF ReceiveAllBuf THEN
+	TouchTableFill := FALSE;
+	AirTableFill := FALSE;
+	ExFSpdUpTableFill := FALSE;
+	SendOffset := SendOffset + 2000;
+	IF SendOffset >= TotalTimeByMs THEN
+		SendOffset := 0;
+		ProduceState := S_FillSubTable;
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillSubIOTable" Id="{382186de-6392-4170-9541-37a776ffe46a}">
+      <Implementation>
+        <ST><![CDATA[IsGetTableBuf := FALSE;
+IF SubProgramConfig[getSubNo].TotalTableSIze = 0 THEN
+	ProduceState := S_FillTouchAdjustTable;
+ELSE
+    IF AirTableBuf.OK THEN
+        FOR airIdx := 1 TO AirNo DO
+            FOR Idx := 0 TO 1999  DO
+                SubProgramTable[getSubNo].airTable[airIdx, idx + SendOffset] := AirTableBuf.Table[airIdx, idx];
+            END_FOR
+        END_FOR
+        SendOffset := SendOffset + 2000;
+        AirTableBuf.OK := FALSE;
+        IF SendOffset >= SubProgramConfig[getSubNo].TotalTableSize THEN
+            getSubNo := getSubNo + 1;
+            SendOffset := 0;
+        END_IF
+    END_IF
+    IsGetTableBuf := AirTableBuf.OK;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillSubTable" Id="{94ead188-445c-4b6a-9443-31a09ae0c8b6}">
+      <Implementation>
+        <ST><![CDATA[
+IsGetTableBuf := FALSE;
+IF SubProgramConfig[getSubNo].TotalTableSIze = 0 THEN
+	getSubNo := 1;
+	ProduceState := S_FillSubIOTable;
+ELSE
+	IF AxisTableBuf.OK THEN
+		FOR axisIdx := 1 TO No DO
+			FOR Idx := 0 TO 1999  DO
+				SubProgramTable[getSubNo].AxisTable[axisIdx, idx + SendOffset] := AxisTableBuf.Table[axisIdx, idx];
+			END_FOR
+		END_FOR
+		SendOffset := SendOffset + 2000;
+		AxisTableBuf.OK := FALSE;
+		IF SendOffset >= SubProgramConfig[getSubNo].TotalTableSize THEN
+			getSubNo := getSubNo + 1;
+			SendOffset := 0;
+		END_IF
+	END_IF
+	IsGetTableBuf := AxisTableBuf.OK;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillTouchAdjustTable" Id="{81097f75-c877-444c-9743-9258ae7f6da3}">
+      <Implementation>
+        <ST><![CDATA[IsGetTableBuf := FALSE;
+IF AxisTableBuf.OK THEN
+    FOR axisIdx := 1 TO TouchAdjustNo DO
+        IF TouchAdjustConfig[axisIdx].Enable THEN
+            FOR idx := 0 TO 1999  DO
+                TouchAdjustTable[axisIdx, idx + SendOffset] := AxisTableBuf.Table[axisIdx, idx];
+            END_FOR
+        END_IF        
+    END_FOR
+    SendOffset := SendOffset + 2000;
+    AxisTableBuf.OK := FALSE;
+    IF SendOffset >= TotalTimeByMs THEN
+        SendOffset := 0;
+        ProduceState := S_EnableExtSetPoint;
+    END_IF
+END_IF
+IsGetTableBuf := AxisTableBuf.OK;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FSetCurPos" Id="{eaaa003a-8495-48c9-9476-2348e63b34d2}">
+      <Implementation>
+        <ST><![CDATA[
+IF FNeedHoldPos.Yes THEN
+	Feeder.CurPos := Feeder.BasePos + Feeder.TouchPos;
+ELSE
+	Feeder.CurPos := Feeder.BasePos + TableOffsetPos[axisIdx];
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Initial" Id="{93eba462-3072-4e88-bca3-0cd4a0785c56}">
+      <Implementation>
+        <ST><![CDATA[
+
+FOR axisIdx:=1 TO No DO
+	(*Set的最後一個點非0的時候沒清會爆衝*)
+	Axis[axisIdx].Axis.PlcToNc.ExtSetPos := Axis[axisIdx].ActPos;
+	Axis[axisIdx].EnableSetPointGenerator.Execute := FALSE;
+	TableOffsetPos[axisIdx] := Axis[axisIdx].ActPos;
+	OldPosition[axisIdx] := Axis[axisIdx].ActPos;
+	OldVelocity[axisIdx] := 0;
+	IsExtSetPointDone[axisIdx]:=FALSE;
+	ModuloBase[axisIdx]  := Axis[axisIdx].ActPos;
+END_FOR
+
+ProFirstTime			:= FALSE;
+Idx0FirstTime			:= TRUE;
+ProduceState			:= S_FillAxisTable;
+StartProNum				:= ProduceCurNum;
+ProduceTimer			:= 0;
+PPM						:= 0;
+PPMCal(Clear := TRUE);
+SpeedDownTo0			:= FALSE;
+SpeedUPToOverride		:= FALSE;
+SpeedCtrlAccTimer(IN:=FALSE);
+SpeedCtrlDecTimer(IN:=FALSE);
+
+JumpFirstTime		:= TRUE;
+
+(*Send Table*)
+getSubNo			:= 1;
+SendOffset			:= 0;
+TouchTableFill 		:= FALSE;
+AirTableFill 			:= FALSE;
+ExFSpdUpTableFill 	:= FALSE;
+
+(*Index*)
+CurrentTableIdx		:= 0;
+CurrentTableOffset	:= 0;
+LastTableOffset		:= 0;
+
+(*IO*)
+FOR touchIdx := 1 TO TouchNo DO
+	TouchDist[touchIdx] 	 := 0;
+	TouchConfigIdx[touchIdx] := 0;
+	PreTouchShow[touchIdx]   := FALSE;
+	ThisTurnTouchMissShow[touchIdx] := FALSE;
+END_FOR
+IsTouch				:= FALSE;
+IsPreTouch			:= FALSE;
+TouchOpenNo		:= 0;
+TouchMiss			:= FALSE;
+TouchBeforeStart		:= FALSE;
+TouchMissNum		:= 0;
+ThisTurnTouchMiss	:= FALSE;
+IsOverUpBound		:= FALSE;
+IsBelowDownBound	:= FALSE;
+FeederIdx			:= 0;
+Feeder.CurPos		:= Axis[FeederNo].Axis.NcToPlc.SetPos;
+Feeder.BasePos	:= 0;
+Feeder.StillPos		:= 0;
+Feeder.TouchPos		:= 0;
+
+AxisTableBuf.OK		:= FALSE;
+TouchTableBuf.OK	:= FALSE;
+AirTableBuf.OK		:= FALSE;
+ExFSpdUpTableBuf.OK:= FALSE;
+
+FOR TouchAdjustIdx := 1 TO TouchAdjustNo DO
+	AdjustCounter[TouchAdjustIdx] := 0;
+	AdjustCounterBuf[TouchAdjustIdx] := 0;
+END_FOR
+
+RunSubProgram		:= FALSE;
+SubInFirstTime		:= TRUE;
+RunSubNo			:=1;
+SubTableIdx			:=0;
+SubTableOffset		:=0;
+
+(*油初始先開*)
+FirstAutoRun := TRUE;
+
+(*G5*)
+G5Status.ATimeFIdx	   := 0;
+G5Status.CurIdx		   := 1;
+G5Status.CurTimes	   := 0;
+G5Status.JumpFirstTime := FALSE;
+
+lState	:= State;
+SpeedChanged := FALSE;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ModuloTurnsPlus1" Id="{58dc5730-c52d-45c7-821d-d7a55b4871de}">
+      <Implementation>
+        <ST><![CDATA[FOR axisIdx := 1 TO No DO
+	IF AxesUseModulo[axisIdx] THEN
+		AxesModuloTurns[axisIdx] := AxesModuloTurns[axisIdx] +  LREAL_TO_DINT( AxesModuloOGrad[axisIdx]) / AxesGradPerTurn[axisIdx];				
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="NextCycleIdx" Id="{4049f3c8-3953-48eb-9742-363983ff364b}">
+      <Implementation>
+        <ST><![CDATA[
+(*探針失誤1次 設定也是一次 則 先暫停 => CurrentTableOffset 不變*)
+IF TouchMissStop = FALSE THEN
+	LastTableOffset := CurrentTableOffset;
+	CurrentTableOffset := CurrentTableOffset + Speed/100;
+END_IF
+
+(*CurrentTableIdx增加的時候*)
+IF CurrentTableOffset >= 1 THEN
+	CurrentTableOffset := CurrentTableOffset - 1;
+	(*閃電模式*)
+	IF FlashModeOn THEN
+		(*RepeatA*)
+		IF CurrentTableIdx = RepeatA THEN
+			(*紀錄RepeatA時的FeederIdx給跳回來時設定*)
+			RepeatA_FeederIdx 	:= FeederIdx;
+			FOR touchIdx := 1 TO TouchNo DO
+				RepeatA_TouchConfigIdx[touchIdx] := TouchConfigIdx[touchIdx];
+			END_FOR
+			CurrentTableIdx 	:= CurrentTableIdx + 1;
+			(*第一條*)
+			IF StartProNum = ProduceCurNum THEN
+								ModuloTurnsPlus1();
+				ProduceCurNum	:= ProduceCurNum + 1;
+				PPMCal( CurTime := ProduceTimer, PPM => PPM );
+				IF ProduceCurNum = ProduceNum THEN(*無法停止已經做到一半必須做完*)
+					ProduceNum	:= ProduceNum + 1;
+				END_IF
+			END_IF
+		(*RepeatB*)
+	 	ELSIF CurrentTableIdx = RepeatB THEN
+			IF ProduceCurNum < ProduceNum - 1 THEN
+				JumpFirstTime 	:= TRUE;
+				CurrentTableIdx := RepeatA;
+				FeederIdx		:= RepeatA_FeederIdx;	
+				FOR touchIdx := 1 TO TouchNo DO
+					TouchConfigIdx[touchIdx] := RepeatA_TouchConfigIdx[touchIdx];
+				END_FOR
+				FOR axisIdx := 1 TO No DO
+					IF AxesUseModulo[axisIdx] THEN
+						ModuloBase[axisIdx] := ModuloBase[axisIdx] + AxesModuloOGrad[axisIdx];
+					END_IF
+				END_FOR	
+								ModuloTurnsPlus1();
+				ProduceCurNum 	:= ProduceCurNum + 1;
+				PPMCal( CurTime := ProduceTimer, PPM => PPM );
+			ELSIF ProduceCurNum = ProduceNum - 1 THEN
+								ModuloTurnsPlus1();
+				ProduceNum		:= ProduceNum + 1;(*無法停止已經做到一半必須做完*)
+				ProduceCurNum 	:= ProduceCurNum + 1;
+				PPMCal( CurTime := ProduceTimer, PPM => PPM );
+				CurrentTableIdx := CurrentTableIdx + 1;
+			ELSE
+				CurrentTableIdx := CurrentTableIdx + 1;
+			END_IF
+		(*停機時機1*)	(*停機時機2*)
+		ELSIF CurrentTableIdx = StopTiming1 OR CurrentTableIdx = StopTiming2 THEN
+
+			IF ProduceCurNum = ProduceNum - 1 THEN
+
+				IF CurrentTableIdx = StopTiming1 THEN
+					FOR axisIdx := 1 TO No DO
+						IF AxesUseModulo[axisIdx] THEN
+							ModuloBase[axisIdx] := ModuloBase[axisIdx] - 2 * AxesModuloOGrad[axisIdx];
+						END_IF
+					END_FOR		
+				ELSIF CurrentTableIdx = StopTiming2 THEN
+					FOR axisIdx := 1 TO No DO
+						IF AxesUseModulo[axisIdx] THEN
+							ModuloBase[axisIdx] := ModuloBase[axisIdx] - AxesModuloOGrad[axisIdx];
+						END_IF
+					END_FOR	
+				END_IF
+
+				CurrentTableIdx 	 := JumpTiming;
+				JumpFirstTime		 := TRUE;
+
+			(*探針停機*)
+			ELSIF TouchMissNum = TouchMissSetNum AND TouchMissSetNum <> 0 THEN		
+								ModuloTurnsPlus1();
+				ProduceNum 			 := ProduceCurNum + 1;
+				CurrentTableIdx 	 := JumpTiming;
+				JumpFirstTime		 := TRUE;
+				
+			ELSE
+				(*下條彈簧開始*)
+				FOR touchIdx := 1 TO TouchNo DO
+					TouchDist[touchIdx] := 0;
+				END_FOR
+				CurrentTableIdx 	 := CurrentTableIdx + 1;
+			END_IF
+		ELSE
+			CurrentTableIdx 	 := CurrentTableIdx + 1;
+		END_IF
+		
+	ELSIF CurrentTableIdx = G5Config[G5Status.CurIdx].ATime THEN
+		CurrentTableIdx    := CurrentTableIdx + 1;
+		G5Status.ATimeFIdx := FeederIdx;
+		G5Status.ATimeSubNo:= RunSubNo;
+		FOR touchIdx := 1 TO TouchNo DO
+			G5Status.ATimeTouchConfigIdx[touchIdx] := TouchConfigIdx[touchIdx];
+		END_FOR
+
+	ELSIF CurrentTableIdx = G5Config[G5Status.CurIdx].BTime AND G5Status.CurTimes < G5Config[G5Status.CurIdx].RepeatTimes THEN
+		CurrentTableIdx 	   := G5Config[G5Status.CurIdx].ATime;
+		FeederIdx			   := G5Status.ATimeFIdx;
+		RunSubNo 			   := G5Status.ATimeSubNo;
+		G5Status.JumpFirstTime := TRUE;
+		G5Status.CurTimes	   := G5Status.CurTimes + 1;
+		IsHookMovable			   := FALSE;
+		FOR touchIdx := 1 TO TouchNo DO
+			TouchConfigIdx[touchIdx] := G5Status.ATimeTouchConfigIdx[touchIdx];
+		END_FOR
+
+	ELSIF CurrentTableIdx = G5Config[G5Status.CurIdx].BTime AND G5Status.CurTimes = G5Config[G5Status.CurIdx].RepeatTimes THEN
+		IF G5Config[G5Status.CurIdx].BTime = G5Config[G5Status.CurIdx + 1].ATime AND G5Status.CurIdx + 1 <= G5ConfigNo THEN
+			G5Status.ATimeFIdx := FeederIdx;
+			G5Status.ATimeSubNo:= RunSubNo;
+			FOR touchIdx := 1 TO TouchNo DO
+				G5Status.ATimeTouchConfigIdx[touchIdx] := TouchConfigIdx[touchIdx];
+			END_FOR
+		END_IF
+		CurrentTableIdx   := CurrentTableIdx + 1;
+		G5Status.CurIdx   := G5Status.CurIdx + 1;
+		G5Status.CurTimes := 0;
+		IsHookMovable		  := TRUE;
+	ELSE
+	(*一般情況*)
+		CurrentTableIdx := CurrentTableIdx + 1;
+	END_IF
+END_IF
+
+IF CurrentTableIdx = TotalTimeByMs THEN
+	(*到達探針失誤量就停機*)
+	IF TouchMissNum >= TouchMissSetNum AND TouchMissSetNum <> 0 THEN
+	 	ProduceNum := ProduceCurNum;
+	ELSE		
+		CurrentTableIdx 	:= 0;
+		RunSubNo			:= 1;
+		G5Status.CurIdx		:= 1;
+		G5Status.CurTimes	:= 0;
+		Idx0FirstTime		:= TRUE;
+				ModuloTurnsPlus1();
+		ProduceCurNum   := ProduceCurNum + 1;
+		PPMCal( CurTime := ProduceTimer, PPM => PPM );
+	END_IF
+END_IF
+
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="NextSubProgram" Id="{69feb6e4-4418-4e30-a6ad-e2e9c11e6cc0}">
+      <Implementation>
+        <ST><![CDATA[
+(*切換到下個副程式*)
+IF RunSubNo <= SubProgramNo
+AND SubProgramConfig[RunSubNo].TotalTableSize <> 0
+AND CurrentTableIdx > SubProgramConfig[RunSubNo].EndIdx + 1 THEN
+	RunSubNo := RunSubNo + 1;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="OilFunc" Id="{818da71e-ed48-42be-8dc2-eead1d505e59}">
+      <Implementation>
+        <ST><![CDATA[FOR idx := 1 TO OilNo DO
+	IF Oil[idx].Enable THEN
+
+	(*要初始化
+	Oil[idx].IsOpen := TRUE;
+	Oil[idx].CurTime := 0;
+	Oil[idx].CurStrokes := 0;
+	OilStrokeCount[idx] := ProduceCurNum;
+	*)
+
+		IF Oil[idx].IsOpen THEN
+			IF Oil[idx].OpenTime <> 0 AND Oil[idx].CurTime < Oil[idx].OpenTime THEN
+				Oil[idx].CurTime := Oil[idx].CurTime + 1;
+				IF Oil[idx].CurTime >= Oil[idx].OpenTime THEN
+					Oil[idx].CurTime :=0;
+					Oil[idx].IsOpen := FALSE;
+					OilStrokeCount[idx] := ProduceCurNum;
+				END_IF
+			END_IF
+		ELSE
+			IF Oil[idx].CloseTime <> 0 AND Oil[idx].CurTime < Oil[idx].CloseTime THEN
+				Oil[idx].CurTime := Oil[idx].CurTime + 1;
+				IF Oil[idx].CurTime >= Oil[idx].CloseTime THEN
+					Oil[idx].CurTime :=0;
+					Oil[idx].IsOpen := TRUE;
+				END_IF
+			ELSIF Oil[idx].CloseStrokes <> 0 AND Oil[idx].CurStrokes <= Oil[idx].CloseStrokes
+			AND OilStrokeCount[idx] <> ProduceCurNum
+			THEN
+				OilStrokeCount[idx] := ProduceCurNum;
+				Oil[idx].CurStrokes := Oil[idx].CurStrokes + 1;
+				IF Oil[idx].CurStrokes = Oil[idx].CloseStrokes THEN (*當下那圈不算*)
+					Oil[idx].CurStrokes :=0;
+					Oil[idx].IsOpen := TRUE;
+				END_IF
+			END_IF
+		END_IF
+
+	ELSE
+		Oil[idx].IsOpen := FALSE;
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SubAirFunc" Id="{e7a12236-110f-43fc-b1b9-bbfac76433ef}">
+      <Implementation>
+        <ST><![CDATA[(*----------------SubAir----------------1,2,7,8是探針汽缸*)
+(*非測試編輯時跑表*)
+IF NOT (Inputstate.VRSwitch = FALSE AND State = ENUMSTATE.S_TEST) THEN
+	FOR airIdx := 1 TO AirNo DO
+		IF  airIdx <> 1 
+		AND airIdx <> 2 
+		AND airIdx <> 7 
+		AND airIdx <> 8 
+		THEN
+			AirIsOpen[airIdx] := SubProgramTable[RunSubNo].AirTable[airIdx, SubTableIdx];
+		END_IF
+	END_FOR
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="TouchFunc" Id="{aa773240-def7-44aa-b68a-4dc137a675d6}">
+      <Implementation>
+        <ST><![CDATA[
+FOR touchIdx := 1 TO TouchNo DO
+
+	(* 還沒開始就探到 探針失誤 StartIdx *)
+	IF CurrentTableIdx = TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]]
+	 AND TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]] <> TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+	 AND DigInSlave[2].Input[touchIdx] AND NOT TouchMiss THEN
+
+		IsPreTouch			:= TRUE;
+		PreTouchShow[touchIdx]   := TRUE;
+		ThisTurnTouchMissShow[touchIdx]   := FALSE;
+		TouchMiss 			:= TRUE;
+		ThisTurnTouchMiss   := TRUE;
+		TouchMissNum 		:= TouchMissNum + 1;
+		IsTouchWithF 		:= FALSE;
+
+		(*到達失誤量*)
+		IF TouchMissNum = TouchMissSetNum AND TouchMissSetNum = 1 THEN
+			(*一次直接Error Reset*)
+			TouchMissStop := TRUE;
+		END_IF
+		(*有送線*)
+		IF CurrentTableIdx = FeederStartIdx[FeederIdx] OR CurrentTableIdx = FeederEndIdx[FeederIdx] THEN
+
+			TableOffsetPos[FeederNo]:= AxisTable1[FeederNo, CurrentTableIdx];
+
+			Feeder.TouchPos 		:= TableOffsetPos[FeederNo];
+			Feeder.TouchFeederIdx 	:= FeederIdx;
+			TouchDist[touchIdx] 	:= 0;
+			FTouchShowPos 			:= 0;
+			IsTouchWithF 		:= TRUE;
+
+		ELSE
+			TouchDist[touchIdx]		:= 0;
+			FTouchShowPos			:= TouchDist[touchIdx];
+		END_IF
+
+	(* 探針中 StartIdx+1 ~ EndIdx-1 *)
+	ELSIF CurrentTableIdx > TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]]
+	  AND CurrentTableIdx < TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+	  AND DigInSlave[2].Input[touchIdx] AND NOT TouchMiss AND NOT IsPreTouch AND NOT IsTouch THEN
+
+		IsTouch := TRUE;
+		TouchOpenNo	:= touchIdx;
+		IsTouchWithF 		:= FALSE;
+
+		(* 有送線 送線開啟*)
+		IF AxisIsOn[FeederNo]
+		AND (CurrentTableIdx > FeederStartIdx[FeederIdx]
+		AND  CurrentTableIdx < FeederEndIdx[FeederIdx]) THEN	
+
+			Feeder.TouchPos := TableOffsetPos[FeederNo];
+			Feeder.TouchFeederIdx := FeederIdx;
+			TouchDist[touchIdx] := Feeder.TouchPos - Feeder.StillPos;
+			FTouchShowPos := TouchDist[touchIdx];
+			IsTouchWithF 		:= TRUE;
+
+			(* 探針補償 *)
+			IsAdjustTouch(touchNo := touchIdx, CurrentTableIdx := CurrentTableIdx);
+			IF IsAdjustTouch.Yes THEN
+
+				(* 在公差範圍外算是失誤 *)
+				IF TouchDist[touchIdx] < TouchAdjustConfig[IsAdjustTouch.AdjustIdx].DownBound 
+				OR TouchDist[touchIdx] > TouchAdjustConfig[IsAdjustTouch.AdjustIdx].UpBound THEN
+
+					IF TouchDist[touchIdx] < TouchAdjustConfig[IsAdjustTouch.AdjustIdx].DownBound THEN
+						PreTouchShow[touchIdx]   := TRUE;
+						IsBelowDownBound := TRUE;
+					ELSE
+						ThisTurnTouchMissShow[touchIdx] := TRUE;
+						IsOverUpBound := TRUE;
+					END_IF
+
+					TouchMiss 			:= TRUE;
+					ThisTurnTouchMiss   := TRUE;
+					TouchMissNum 		:= TouchMissNum + 1;
+
+					(*到達失誤量*)
+					IF TouchMissNum = TouchMissSetNum AND TouchMissSetNum = 1 THEN
+						(*一次直接Error Reset*)
+						TouchMissStop := TRUE;
+					END_IF
+				
+				ELSIF TouchDist[touchIdx] > TouchAdjustConfig[IsAdjustTouch.AdjustIdx].RangeUp THEN
+					IF AdjustCounter[IsAdjustTouch.AdjustIdx] + 1 <= TouchAdjustConfig[IsAdjustTouch.AdjustIdx].UpCountLimit THEN (* 4 + 1 <= 5.5 *)
+
+						AdjustCounterBuf[IsAdjustTouch.AdjustIdx] := AdjustCounterBuf[IsAdjustTouch.AdjustIdx] + 1;
+
+					ELSIF AdjustCounter[IsAdjustTouch.AdjustIdx] + 1 - TouchAdjustConfig[IsAdjustTouch.AdjustIdx].UpCountLimit < 1 THEN (*5 + 1 - 5.5 < 1*)
+
+						AdjustCounterBuf[IsAdjustTouch.AdjustIdx] := TouchAdjustConfig[IsAdjustTouch.AdjustIdx].UpCountLimit - AdjustCounter[IsAdjustTouch.AdjustIdx];(* 5.5 - 5 *)
+					END_IF
+
+				ELSIF TouchDist[touchIdx] < TouchAdjustConfig[IsAdjustTouch.AdjustIdx].RangeDown THEN
+					IF AdjustCounter[IsAdjustTouch.AdjustIdx] - 1 >= TouchAdjustConfig[IsAdjustTouch.AdjustIdx].DownCountLimit THEN (* -4 - 1 >= -5.5 *)
+
+						AdjustCounterBuf[IsAdjustTouch.AdjustIdx] := AdjustCounterBuf[IsAdjustTouch.AdjustIdx] - 1;
+
+					ELSIF AdjustCounter[IsAdjustTouch.AdjustIdx] - 1 - TouchAdjustConfig[IsAdjustTouch.AdjustIdx].DownCountLimit > -1 THEN (* -5 - 1 - (-5.5) > -1  *)
+
+						AdjustCounterBuf[IsAdjustTouch.AdjustIdx] := TouchAdjustConfig[IsAdjustTouch.AdjustIdx].DownCountLimit - AdjustCounter[IsAdjustTouch.AdjustIdx];(* -5.5 - (-5) *)
+
+					END_IF
+
+				END_IF
+
+			END_IF
+
+		ELSE
+			TouchDist[touchIdx]		:= 0;
+			FTouchShowPos			:= TouchDist[touchIdx];
+		END_IF
+
+	(* 探針結束還沒探到 探針失誤 EndIdx *)
+	ELSIF CurrentTableIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+      AND TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]] <> 0
+	  AND NOT IsTouch AND NOT TouchMiss THEN
+
+		TouchMiss := TRUE;
+		TouchDist[TouchOpenNo] := 0;
+		TouchMissNum := TouchMissNum + 1;
+		ThisTurnTouchMiss	:= TRUE;
+		PreTouchShow[touchIdx]   := FALSE;
+		ThisTurnTouchMissShow[touchIdx] := TRUE;
+		(*到達失誤量*)
+		IF TouchMissNum = TouchMissSetNum AND TouchMissSetNum = 1 THEN
+			(*一次直接Error Reset*)
+			TouchMissStop := TRUE;
+		END_IF
+
+
+	(* 有開啟全域探針 *)
+	ELSIF IOSwitch.GlobalTouchEnable THEN
+
+		InAnotherTouch(CurrTouchIdx:=touchIdx, CurrentIdx:=CurrentTableIdx, TouchConfig:=TouchConfig, TouchConfigIdx:=TouchConfigIdx);
+		(* 除了探針動作之外碰到 算是探針異常 *)
+		IF NOT InAnotherTouch.Yes
+		AND CurrentTableIdx < TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]]
+		AND TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]] <> TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+		AND DigInSlave[2].Input[touchIdx] AND NOT TouchMiss THEN
+
+			TouchMiss 			:= TRUE;
+			ThisTurnTouchMiss	:= TRUE;
+			PreTouchShow[touchIdx]   := FALSE;
+			ThisTurnTouchMissShow[touchIdx] := FALSE;
+			GlobalTouchShow[touchIdx]     := TRUE;
+			TouchMissNum 		:= TouchMissNum + 1;
+			(*到達失誤量*)
+			IF TouchMissNum = TouchMissSetNum AND TouchMissSetNum = 1 THEN
+				(*一次直接Error Reset*)
+				TouchMissStop := TRUE;
+			END_IF
+
+		(* 探針前已經失誤 設定IsPreTouch 不要送線*)
+		ELSIF CurrentTableIdx = TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]]
+		AND TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]] <> TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+		AND TouchMiss THEN
+
+			IsPreTouch			:= TRUE;
+			PreTouchShow[touchIdx]   := FALSE;
+			ThisTurnTouchMissShow[touchIdx] := FALSE;
+			GlobalTouchShow[touchIdx]     := TRUE;
+			IsTouchWithF 		:= FALSE;
+
+			(*有送線*)
+			IF CurrentTableIdx = FeederStartIdx[FeederIdx] OR CurrentTableIdx = FeederEndIdx[FeederIdx] THEN
+
+				TableOffsetPos[FeederNo]:= AxisTable1[FeederNo, CurrentTableIdx];
+
+				Feeder.TouchPos 		:= TableOffsetPos[FeederNo];
+				Feeder.TouchFeederIdx 	:= FeederIdx;
+				TouchDist[touchIdx] 	:= 0;
+				FTouchShowPos 			:= 0;
+				IsTouchWithF 		:= TRUE;
+
+			ELSE
+				TouchDist[touchIdx]		:= 0;
+				FTouchShowPos			:= TouchDist[touchIdx];
+			END_IF
+		END_IF
+
+	END_IF
+
+END_FOR
+
+(*----------------Touch Air----------------*)
+(*非測試編輯時跑表*)
+IF NOT (Inputstate.VRSwitch = FALSE AND State = ENUMSTATE.S_TEST) THEN
+	FOR touchIdx := 1 TO TouchNo DO
+		IF IsTouch OR TouchMiss
+		OR TouchConfigIdx[touchIdx] > 0 AND CurrentTableIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+		//		OR TouchConfigIdx[touchIdx] > 0 AND CurrentTableIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx] - 1]
+		OR CurrentTableIdx = TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]] AND TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]] <> 0 THEN
+			IF touchIdx = 3 THEN
+				AirIsOpen[7] := FALSE;
+			ELSIF touchIdx = 4 THEN
+				AirIsOpen[8] := FALSE;
+			ELSE
+				AirIsOpen[touchIdx] := FALSE;
+			END_IF
+		ELSE
+			IF touchIdx = 3 THEN
+				AirIsOpen[7] := AirTable[7, CurrentTableIdx];
+			ELSIF touchIdx = 4 THEN
+				AirIsOpen[8] := AirTable[8, CurrentTableIdx];
+			ELSE
+				AirIsOpen[touchIdx] := AirTable[touchIdx, CurrentTableIdx];
+			END_IF
+		END_IF
+	END_FOR
+END_IF
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="TouchPreCheck" Id="{abf11e29-d13f-4913-8b0c-52fae24c978a}">
+      <Implementation>
+        <ST><![CDATA[
+FOR touchIdx := 1 TO TouchNo DO
+
+	(* 還沒開始就探到 探針失誤 StartIdx *)
+	IF CurrentTableIdx = TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]]
+	 AND TouchConfig[touchIdx].StartIdx[TouchConfigIdx[touchIdx]] <> TouchConfig[touchIdx].EndIdx[TouchConfigIdx[touchIdx]]
+	 AND DigInSlave[2].Input[touchIdx] AND NOT TouchMiss THEN			 
+
+		IsPreTouch			:= TRUE;
+		PreTouchShow[touchIdx]   := TRUE;
+		ThisTurnTouchMissShow[touchIdx]   := FALSE;
+		TouchMiss 			:= TRUE;
+		ThisTurnTouchMiss   := TRUE;
+		TouchMissNum 		:= TouchMissNum + 1;
+		IsTouchWithF 		:= FALSE;
+
+		(*到達失誤量*)
+		IF TouchMissNum = TouchMissSetNum AND TouchMissSetNum = 1 THEN
+			(*一次直接Error Reset*)
+			TouchMissStop := TRUE;
+		END_IF
+		(*有送線*)
+		IF CurrentTableIdx = FeederStartIdx[FeederIdx] OR CurrentTableIdx = FeederEndIdx[FeederIdx] THEN
+
+			TableOffsetPos[FeederNo]:= AxisTable1[FeederNo, CurrentTableIdx];
+
+			Feeder.TouchPos 		:= TableOffsetPos[FeederNo];
+			Feeder.TouchFeederIdx 	:= FeederIdx;
+			TouchDist[touchIdx] 	:= 0;
+			FTouchShowPos 			:= 0;
+			IsTouchWithF 		:= TRUE;
+
+		ELSE
+			TouchDist[touchIdx]		:= 0;
+			FTouchShowPos			:= TouchDist[touchIdx];
+		END_IF
+		
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WaitExtSetPoint" Id="{8fe4e65a-71ad-4dcc-a617-f9539ab13746}">
+      <Implementation>
+        <ST><![CDATA[
+
+IsSetPointComplete := TRUE;
+FOR axisIdx := 1 TO No DO
+	IF AxisIsOn[axisIdx] THEN
+		IF Axis[axisIdx].EnableSetPointGenerator.Done THEN
+			Axis[axisIdx].EnableSetPointGenerator.Execute := FALSE;
+			IsExtSetPointDone[axisIdx] := TRUE;
+		END_IF
+		IsSetPointComplete := IsSetPointComplete AND IsExtSetPointDone[axisIdx];
+	END_IF
+END_FOR
+IF IsSetPointComplete THEN
+	ProduceState := S_Run;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="Produce">
+      <LineId Id="117" Count="341" />
+      <LineId Id="628" Count="0" />
+      <LineId Id="459" Count="51" />
+    </LineIds>
+    <LineIds Name="Produce.AirFunc">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="Produce.CtrlSpeed">
+      <LineId Id="0" Count="48" />
+    </LineIds>
+    <LineIds Name="Produce.EnableExtSetPoint">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="Produce.ExFeederFunc">
+      <LineId Id="0" Count="4" />
+    </LineIds>
+    <LineIds Name="Produce.FeederPosSetting">
+      <LineId Id="0" Count="45" />
+    </LineIds>
+    <LineIds Name="Produce.FeederVelAccSetting">
+      <LineId Id="0" Count="20" />
+    </LineIds>
+    <LineIds Name="Produce.FillAxisTable">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="Produce.FillIOTable">
+      <LineId Id="0" Count="47" />
+    </LineIds>
+    <LineIds Name="Produce.FillSubIOTable">
+      <LineId Id="0" Count="18" />
+    </LineIds>
+    <LineIds Name="Produce.FillSubTable">
+      <LineId Id="0" Count="20" />
+    </LineIds>
+    <LineIds Name="Produce.FillTouchAdjustTable">
+      <LineId Id="0" Count="16" />
+    </LineIds>
+    <LineIds Name="Produce.FSetCurPos">
+      <LineId Id="0" Count="5" />
+    </LineIds>
+    <LineIds Name="Produce.Initial">
+      <LineId Id="0" Count="87" />
+    </LineIds>
+    <LineIds Name="Produce.ModuloTurnsPlus1">
+      <LineId Id="0" Count="4" />
+    </LineIds>
+    <LineIds Name="Produce.NextCycleIdx">
+      <LineId Id="0" Count="149" />
+    </LineIds>
+    <LineIds Name="Produce.NextSubProgram">
+      <LineId Id="0" Count="6" />
+    </LineIds>
+    <LineIds Name="Produce.OilFunc">
+      <LineId Id="0" Count="41" />
+    </LineIds>
+    <LineIds Name="Produce.SubAirFunc">
+      <LineId Id="0" Count="12" />
+    </LineIds>
+    <LineIds Name="Produce.TouchFunc">
+      <LineId Id="0" Count="190" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="191" Count="20" />
+    </LineIds>
+    <LineIds Name="Produce.TouchPreCheck">
+      <LineId Id="0" Count="38" />
+    </LineIds>
+    <LineIds Name="Produce.WaitExtSetPoint">
+      <LineId Id="0" Count="14" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

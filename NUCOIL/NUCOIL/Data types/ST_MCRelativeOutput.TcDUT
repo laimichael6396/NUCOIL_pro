@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_MCRelativeOutput" Id="{ea9ac62b-671d-4f04-990e-3dcb4bd4d768}">
+    <Declaration><![CDATA[TYPE ST_MCRelativeOutput :
+STRUCT
+	Done 				:BOOL;
+	Busy 				:BOOL;
+	Active 				:BOOL;
+	CommandAborted 	:BOOL;
+	Error 				:BOOL;
+	boolbuf1				:BOOL;
+	boolbuf2				:BOOL;
+	boolbuf3				:BOOL;
+	ErrorID 				:UDINT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

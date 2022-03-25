@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_CamTable" Id="{7e300b96-8f3a-42e7-9cd5-1bcf83ebc2d1}">
+    <Declaration><![CDATA[TYPE ST_CamTable :
+STRUCT
+	PositionTable		: ARRAY[1..3600, 1..2] OF LREAL;
+	NoOfRows			: UDINT;
+	boolbuf1				: BOOL;
+	boolbuf2				: BOOL;
+	boolbuf3				: BOOL;
+	boolbuf4				: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

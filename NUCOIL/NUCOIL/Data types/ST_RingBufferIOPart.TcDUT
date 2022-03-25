@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_RingBufferIOPart" Id="{71d192d5-ba46-410f-8628-b87414470e18}">
+    <Declaration><![CDATA[TYPE ST_RingBufferIOPart :
+STRUCT
+	(*200當確認點、是否傳送到*)
+	Table	: ARRAY [0..200] OF BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

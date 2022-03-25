@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ENUMSTATE" Id="{c253aaf9-9dc1-4449-a148-07f9569950b3}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE 
+	ENUMSTATE 						: (S_AUTO, S_TEST, S_MPG, S_MANMOV, S_ZRT, S_IDLE, S_ERROR, S_TROUBLESHOOT, S_TROSHO_MANMOV);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

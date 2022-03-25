@@ -1,0 +1,320 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="Error" Id="{2e1312fc-8c63-4b89-901b-8415cc296ed4}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Error
+VAR
+	ENUMERRORSTATE :(S_ERROR_DisableSetPointGenerator, S_ERROR_DECOUPLE, S_ERROR_HALT, S_ERROR_RESET, S_ERROR_RELATIVE, S_ERROR_IDLE);
+	ErrorProState		   : ARRAY [1..No] OF INT;
+	idx 				   : INT:=0;
+	RelativeError		   : BOOL:=FALSE;
+	PowerError		   : BOOL:=FALSE;
+	IOError			   : BOOL:=FALSE;
+	EcSlaveError	   : BOOL:=FALSE;
+	HaltTrig			   : ARRAY [1..No] OF R_TRIG;
+	MasterResetTrig	   : R_TRIG;
+	FeederSetTrig	   : R_TRIG;
+	ResetTrig		   : ARRAY [1..No] OF R_TRIG;
+	ResetTrigByUI	   : ARRAY [1..No] OF R_TRIG;
+	ResetByUI		   : BOOL:=FALSE;
+	ErrorTrig		  	   : R_TRIG;
+	ReadAxisError	   : MC_ReadStatus;
+	AxisStatusErrorID	   : ARRAY [1..No] OF DWORD;
+	AxisRelativeErrorID : ARRAY [1..No] OF UDINT;
+	ResetTimer		   : TON;
+	CloseOil			   : FB_CloseOil;
+	ToubleShootIsError : FB_ToubleShootIsError;
+	IsEcAbnormal	   : FB_EcAbnormal;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+IF ResetByUI = TRUE THEN
+	BuzzerIsOpen     := FALSE;(*蜂鳴器關*)
+	RelativeError      :=FALSE;
+	PowerError    	    :=FALSE;
+	IOError  	      	    := FALSE;
+	EcSlaveError	:= FALSE;
+	TouchMissStop := FALSE;
+	IsConnecting	:= TRUE;
+	ErrorTrig(CLK:=FALSE);
+
+	(*F軸跳機先設位置再Reset*)
+	IF AlarmList.FAlarm_1370 THEN
+		FeederSetTrig(CLK:=TRUE);
+		IF FeederSetTrig.Q THEN
+			Axis[FeederNo].fbMC_SetPosition(
+				Execute	:= FeederSetTrig.Q,
+				Position	:= 0,
+				Axis		:= Axis[FeederNo].Axis
+			);
+		END_IF
+		IF Axis[FeederNo].fbMC_SetPosition.Done THEN
+			FAlarmReset := TRUE;
+		END_IF
+	END_IF
+
+	(*UIReset*)
+MasterResetTrig(CLK:= FALSE);
+	FOR idx:=1 TO No DO
+		IF AxisIsOn[idx] THEN
+			(*清除錯誤訊息*)
+			HaltTrig[idx](CLK:=FALSE);
+			ResetTrig[idx](CLK:= FALSE);
+			AxisStatusErrorID[idx]	   :=0;
+			AxisRelativeErrorID[idx]  :=0;
+			ErrorProState[idx]		   :=S_ERROR_DisableSetPointGenerator;
+			(*ResetAlarm*)
+			ResetTrigByUI[idx](CLK:=TRUE);
+			Axis[idx].fbMC_Reset(
+				Execute:=ResetTrigByUI[idx].Q,
+				Axis:=Axis[idx].Axis
+			);
+		END_IF
+	END_FOR
+
+	(*------AlarmList清除------*)
+	AlarmListClear := TRUE;
+
+	(*Reset延遲500ms才繼續*)
+	ResetTimer(IN:= TRUE,PT:= T#500ms );
+	IF ResetTimer.Q = TRUE THEN
+		ResetTimer(IN:= FALSE);
+		FeederSetTrig(CLK:=FALSE);
+
+		FAlarmReset := FALSE;
+
+		FOR idx:=1 TO No DO
+			ResetTrigByUI[idx](CLK:=FALSE);
+		END_FOR
+		ResetByUI := FALSE;
+	END_IF
+
+ELSE
+
+	(*檢查是否有Error*)
+	IF State = ENUMSTATE.S_TROUBLESHOOT OR State = ENUMSTATE.S_TROSHO_MANMOV THEN
+		RelativeError := FALSE;
+		PowerError     := FALSE;
+	END_IF
+	FOR idx:=1 TO No DO
+		IF AxisIsOn[idx] THEN
+			IF ( ProAndManRelative[idx].Error[1] = TRUE ) OR ( ProAndManRelative[idx].Error[2] = TRUE ) THEN
+				RelativeError:=TRUE;
+			ELSIF   ( Axis[idx].fbMC_Power.Error = TRUE ) THEN
+				PowerError := TRUE;
+			END_IF
+			IF DriveAlarmCode[idx].Error1 <> 0 OR  DriveAlarmCode[idx].Error2 <> 0 OR  DriveAlarmCode[idx].Error3 <> 0 OR  DriveAlarmCode[idx].Error4 <> 0 THEN
+				PowerError := TRUE;
+			END_IF
+		END_IF
+	END_FOR
+
+	(*判斷是否為IO錯誤*)
+	IF State = ENUMSTATE.S_TROUBLESHOOT OR State = ENUMSTATE.S_TROSHO_MANMOV THEN
+		ToubleShootIsError(IsError => IOError);
+
+		FOR idx := 0 TO MaxSlaves DO
+			SlaveEcData[idx].InfoData := SlaveEcInfoData[idx];
+		END_FOR
+	ELSE
+		IF AlarmList.Reset OR AlarmList.ExFeederError OR AlarmList.SafetyError OR  AlarmList.OilError OR AlarmList.EMGStop OR AlarmList.FAlarm_1370 OR AlarmList.ExDeviceError
+		OR AlarmList.PanelEStop OR AlarmList.FrontEStop OR AlarmList.SideEStop OR AlarmList.RearEStop OR AlarmList.DecoilorEStop
+		OR AlarmList.SafetyError1 OR AlarmList.SafetyError2 OR AlarmList.SafetyError3 OR AlarmList.SafetyError4 OR IsConnecting = FALSE
+		OR AlarmList.NG
+		THEN
+			IOError := TRUE;
+		END_IF
+	END_IF
+
+	IsEcAbnormal( Abnormal => EcSlaveError );
+
+	FOR idx := 0 TO MaxSlaves DO
+		SlaveEcData[idx].InfoData := SlaveEcInfoData[idx];
+	END_FOR
+
+	IF RelativeError OR PowerError OR IOError OR EcSlaveError THEN
+		ErrorTrig(CLK :=TRUE);
+		IF ErrorTrig.Q = TRUE THEN
+			State 		:= ENUMSTATE.S_ERROR;
+			(*---------- 生產部分---------*)
+			Producing  	:= FALSE;(*停止生產*)
+			CycleLastCmdIsRun := TRUE;
+			(*--------------------------------*)
+			ProFirstTime  := TRUE;
+			ZRTFirstTime := TRUE;
+			SubRunAloneFirstTime := TRUE;
+			SubRunning	:= FALSE;
+			MoveToPosFirstTime	:= TRUE;
+			MoveToColPosRunning := FALSE;
+						CloseOil();(*關閉油機*)
+			SpeedDownTo0 := FALSE;
+(*Master Reset*)
+MasterResetTrig(CLK:= TRUE);
+Master.fbMC_Reset(
+	Execute:=MasterResetTrig.Q,
+	Axis:=Master.Axis
+);
+Master.fbMC_MoveRelative[1](
+	Execute   :=FALSE,
+	 Axis	:=Master.Axis,
+);
+Master.fbMC_MoveRelative[2](
+	Execute   :=FALSE,
+	 Axis	:=Master.Axis
+);
+			FOR idx:=1 TO No DO
+				IF AxisIsOn[idx] THEN
+					(*讀取AxisError訊息*)
+					(*ReadAxisError(
+						Enable	 	:= TRUE,
+						Axis			:= Axis[idx].Axis,
+						ErrorID 		=>AxisStatusErrorID[idx]
+					);*)
+					 AxisStatusErrorID[idx] := Axis[idx].fbMC_Power.ErrorID;
+					(*只記一組相對移動FB的錯誤*)
+					AxisRelativeErrorID[idx] := Axis[idx].fbMC_MoveRelative[1].ErrorID;
+					IF AxisRelativeErrorID[idx]=0 THEN
+						AxisRelativeErrorID[idx] := Axis[idx].fbMC_MoveRelative[2].ErrorID;
+					END_IF
+				END_IF
+			END_FOR
+
+		END_IF
+
+		FOR idx:=1 TO No DO
+			IF AxisIsOn[idx] THEN
+				CASE ErrorProState[idx] OF
+					S_ERROR_DisableSetPointGenerator:
+						Axis[idx].DisableSetPointGenerator(Execute := TRUE, Axis :=  Axis[idx].Axis);
+						IF Axis[idx].DisableSetPointGenerator.Done THEN
+							 ErrorProState[idx] := S_ERROR_DECOUPLE;
+						END_IF
+					S_ERROR_DECOUPLE:
+						(*Decouple*)
+						Cam[idx].CamOut(Execute := TRUE, Slave:=Axis[idx].Axis);
+						IF Cam[idx].CamOut.Done THEN
+							 ErrorProState[idx] := S_ERROR_HALT;
+						END_IF
+					S_ERROR_HALT:
+						(*MC_HALT*)
+						HaltTrig[idx](CLK:= TRUE);
+						Halt[idx](
+							Execute 		:= HaltTrig[idx].Q,
+							Deceleration 	:= BrakeParam[idx].Deceleration,
+							Jerk 		:= BrakeParam[idx].Jerk,
+							BufferMode 	:= MC_Aborting,
+							Axis			:= Axis[idx].Axis
+						);
+						IF Halt[idx].Done OR Halt[idx].Error THEN
+							(*ErrorProState[idx] := S_ERROR_RESET;*)
+							ErrorProState[idx] := S_ERROR_RELATIVE;
+						END_IF
+(*					S_ERROR_RESET:
+						(*所有軸Reset=>停止或是清除ALARM*)
+						ResetTrig[idx](CLK:= TRUE);
+						Axis[idx].fbMC_Reset(
+							Execute:=ResetTrig[idx].Q,
+							Axis:=Axis[idx].Axis
+						);
+						IF Axis[idx].fbMC_Reset.Done = TRUE THEN
+							ErrorProState[idx] := S_ERROR_RELATIVE;
+						END_IF
+*)
+					S_ERROR_RELATIVE:
+						(*恢復手動和生產的相對運動功能*)
+						Axis[idx].fbMC_MoveRelative[1](
+							Execute   :=FALSE,
+							 Axis	:=Axis[idx].Axis,
+						);
+						Axis[idx].fbMC_MoveRelative[2](
+							Execute   :=FALSE,
+							 Axis	:=Axis[idx].Axis
+						);
+						(*恢復ZRT用JOG*)
+						AxisValue[idx].Jog_JogForward       := FALSE;
+						AxisValue[idx].Jog_JogBackwards := FALSE;
+
+						ErrorProState[idx] :=S_ERROR_IDLE;
+
+				END_CASE
+			END_IF
+		END_FOR
+
+	ELSE
+
+		IF State = ENUMSTATE.S_ERROR OR State = ENUMSTATE.S_TROUBLESHOOT THEN
+
+			BuzzerIsOpen       := FALSE;(*蜂鳴器關*)
+			RelativeError      := FALSE;
+			PowerError    	   := FALSE;
+			IOError  	       := FALSE;
+			TouchMissStop      := FALSE;
+			IsUseVROverride    := FALSE;
+			IsVirtualOOverride := FALSE;
+			ErrorTrig(CLK:=FALSE);(* PLC沒改到 *)
+			(*UIReset*)
+			MasterResetTrig(CLK:= FALSE);
+			FOR idx:=1 TO No DO
+				IF AxisIsOn[idx] THEN
+					(*清除錯誤訊息*)
+					HaltTrig[idx](CLK:=FALSE);
+					ResetTrig[idx](CLK:= FALSE);
+					AxisStatusErrorID[idx]	   :=0;
+					AxisRelativeErrorID[idx]  :=0;
+					ErrorProState[idx]		   :=S_ERROR_DisableSetPointGenerator;
+					(*ResetAlarm*)
+					ResetTrigByUI[idx](CLK:=TRUE);
+					Axis[idx].fbMC_Reset(
+						Execute:=ResetTrigByUI[idx].Q,
+						Axis:=Axis[idx].Axis
+					);
+				END_IF
+			END_FOR
+	
+			(*------AlarmList清除------*)			
+			AlarmListClear := TRUE;
+
+			State := ENUMSTATE.S_IDLE;
+		ELSIF State = ENUMSTATE.S_TROSHO_MANMOV THEN
+
+			BuzzerIsOpen       := FALSE;(*蜂鳴器關*)
+			RelativeError      := FALSE;
+			PowerError    	   := FALSE;
+			IOError  	       := FALSE;
+			TouchMissStop 	   := FALSE;
+			IsUseVROverride    := FALSE;
+			IsVirtualOOverride := FALSE;
+			ErrorTrig(CLK:=FALSE);(* PLC沒改到 *)
+			(*UIReset*)
+			MasterResetTrig(CLK:= FALSE);
+			FOR idx:=1 TO No DO
+				IF AxisIsOn[idx] THEN
+					(*清除錯誤訊息*)
+					HaltTrig[idx](CLK:=FALSE);
+					ResetTrig[idx](CLK:= FALSE);
+					AxisStatusErrorID[idx]	   :=0;
+					AxisRelativeErrorID[idx]  :=0;
+					ErrorProState[idx]		   :=S_ERROR_DisableSetPointGenerator;
+					(*ResetAlarm*)
+					ResetTrigByUI[idx](CLK:=TRUE);
+					Axis[idx].fbMC_Reset(
+						Execute:=ResetTrigByUI[idx].Q,
+						Axis:=Axis[idx].Axis
+					);
+				END_IF
+			END_FOR
+	
+			(*------AlarmList清除------*)			
+			AlarmListClear := TRUE;
+
+			State := ENUMSTATE.S_MANMOV;
+		END_IF
+	END_IF
+
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="Error">
+      <LineId Id="24" Count="285" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_McFBInOutVar" Id="{6e5c4b3f-654d-492f-86fd-9fccce41e461}">
+    <Declaration><![CDATA[TYPE ST_McFBInOutVar :
+STRUCT
+	Axis					:AXIS_REF;
+	ActPos					: LREAL;
+
+	fb_MC_ReadActualPosition :MC_ReadActualPosition;
+	fbMC_Power				:MC_Power;
+	fbMC_MoveRelative		:ARRAY [1..2] OF MC_MoveRelative;
+	fbMC_ReadStatus			:MC_ReadStatus;
+	fbMC_SetPosition		:MC_SetPosition;
+	fbMC_Jog				:MC_Jog;
+	fbMC_TouchProbe			:MC_TouchProbe;
+	fbMC_Reset				:MC_Reset;
+	fbMC_SetOverride		:MC_SetOverride;
+
+	EnableSetPointGenerator	:MC_ExtSetPointGenEnable;
+	DisableSetPointGenerator:MC_ExtSetPointGenDisable;
+
+	fbSDOWrite 				:FB_EcCoESdoWriteEx;
+	fbSDOWrite2 			:FB_EcCoESdoWriteEx;
+	fbSDORead				:FB_EcCoESdoReadEx;
+	fbADSWrite				:ADSWRITE;
+
+	stPowerMcOutputs		: ST_McOutputs;
+	stRelativeMcOutputs		: ARRAY [1..2] OF ST_McOutputs;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

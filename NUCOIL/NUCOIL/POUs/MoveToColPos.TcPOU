@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="MoveToColPos" Id="{15aa9884-61d4-4277-97ab-e9851d7d6cd9}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MoveToColPos
+VAR
+
+    MoveToPosState :(S_FillTable,  S_EnableExtSetPoint, S_WaitExtSetPoint, S_Run, S_Complete);
+	Idx0FirstTime		:BOOL;
+	idx					:INT ;
+	axisIdx				:INT;
+	TotalTimeByMs		:LREAL;
+	Table				:ARRAY [1..No, 0..1999] OF LREAL;
+	CurrentTableIdx		:DINT;
+	CurrentTableOffset	:REAL;
+
+
+	AxisNeedRun			:ARRAY [1..No] OF BOOL;
+	IsExtSetPointDone	:ARRAY [1..No] OF BOOL;
+	IsSetPointComplete 	:BOOL;
+	TableOffsetPos		:ARRAY [1..No] OF  LREAL;
+	OldPosition			:ARRAY [1..No] OF LREAL;
+	ExtVelocity			:ARRAY [1..No] OF LREAL;
+	OldVelocity			:ARRAY [1..No] OF LREAL;
+	ExtAcceleration		:LREAL;
+	ExtDirection		:DINT;
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF MoveToColPosRunning THEN
+
+	IF MoveToPosFirstTime THEN
+		(*初始化*)
+				Initial();
+	END_IF
+
+	CASE MoveToPosState OF
+
+		S_FillTable:
+						FillTable();
+
+		S_EnableExtSetPoint:
+						EnableExtSetPoint();
+
+		S_WaitExtSetPoint:
+						WaitExtSetPoint();
+
+		S_Run:
+
+			(* 表一開始 初始*)
+			IF CurrentTableIdx = 0 AND Idx0FirstTime THEN
+				Idx0FirstTime 		:= FALSE;
+				OldPosition[axisIdx] 	:= 0;
+				OldVelocity[axisIdx] 	:= 0;
+			END_IF
+
+
+
+			(*副程式*)
+
+			(* 設定ExtPosition *)
+			FOR axisIdx := 1 TO No DO
+				IF AxisNeedRun[axisIdx] THEN
+					(* 超過這條最後idx *)
+					IF (CurrentTableIdx + CurrentTableOffset) > (TotalTimeByMs - 1) THEN
+						TableOffsetPos[axisIdx]:= Table[axisIdx, CurrentTableIdx];
+					ELSE
+					(* idx在此表內 *)
+						TableOffsetPos[axisIdx]:= Table[axisIdx, CurrentTableIdx] + ( Table[axisIdx, CurrentTableIdx + 1] - Table[axisIdx, CurrentTableIdx] ) * CurrentTableOffset;
+					END_IF
+				END_IF
+			END_FOR
+
+			FOR axisIdx := 1 TO No DO
+				IF AxisNeedRun[axisIdx] THEN
+					ExtVelocity[axisIdx]:= (TableOffsetPos[axisIdx] - OldPosition[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+					OldPosition[axisIdx]:= TableOffsetPos[axisIdx];
+					ExtAcceleration :=  (ExtVelocity[axisIdx] - OldVelocity[axisIdx]) / (UDINT_TO_LREAL(_TaskInfo[1].CycleTime) / 10000000);
+					OldVelocity[axisIdx]:= ExtVelocity[axisIdx];
+					ExtDirection := SEL(TableOffsetPos[axisIdx] >= OldPosition[axisIdx], -1, 1);
+
+					MC_ExtSetPointGenFeed(
+						Position := TableOffsetPos[axisIdx],
+						Velocity := ExtVelocity[axisIdx],
+						Acceleration := ExtAcceleration,
+						Direction := ExtDirection,
+						Axis := Axis[axisIdx].Axis);
+				END_IF
+			END_FOR
+
+			CurrentTableOffset := CurrentTableOffset + Override/100;
+			
+			IF CurrentTableOffset >= 1 THEN
+				CurrentTableOffset := CurrentTableOffset - 1;
+				CurrentTableIdx := CurrentTableIdx + 1;
+			END_IF
+
+			IF CurrentTableIdx = TotalTimeByMs THEN
+				MoveToPosState := S_Complete;
+				MoveToPosFirstTime := TRUE;
+				MoveToColPosRunning := FALSE;
+				FOR axisIdx:=1 TO No DO
+					Axis[axisIdx].DisableSetPointGenerator.Execute := TRUE;
+				END_FOR			
+			END_IF
+
+
+	END_CASE
+
+END_IF
+]]></ST>
+    </Implementation>
+    <Action Name="EnableExtSetPoint" Id="{cd9a23c7-7291-4c84-94ff-3d16f558bcc3}">
+      <Implementation>
+        <ST><![CDATA[
+
+FOR axisIdx := 1 TO No DO
+	IF AxisNeedRun[axisIdx] THEN
+		Axis[axisIdx].EnableSetPointGenerator
+		(
+			Execute := TRUE,
+			Position := Axis[axisIdx].ActPos,
+			PositionType := POSITIONTYPE_ABSOLUTE,
+			Axis :=  Axis[axisIdx].Axis
+		);
+	END_IF
+END_FOR
+MoveToPosState := S_WaitExtSetPoint;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="FillTable" Id="{abf398f3-c92a-47b4-8a32-a437c0e8bfe6}">
+      <Implementation>
+        <ST><![CDATA[IF AxisTableBuf.OK THEN
+	FOR axisIdx := 1 TO No DO
+		FOR Idx := 0 TO 1999  DO
+			Table[axisIdx, idx] := AxisTableBuf.Table[axisIdx, idx];
+		END_FOR
+	END_FOR
+	AxisTableBuf.OK := FALSE;
+    MoveToPosState := S_EnableExtSetPoint;
+END_IF
+IsGetTableBuf := AxisTableBuf.OK;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Initial" Id="{f9c38376-ca71-472e-9526-334afd5a070b}">
+      <Implementation>
+        <ST><![CDATA[
+FOR axisIdx:=1 TO No DO
+	(*Set的最後一個點非0的時候沒清會爆衝*)
+	Axis[axisIdx].Axis.PlcToNc.ExtSetPos := Axis[axisIdx].ActPos;
+	Axis[axisIdx].EnableSetPointGenerator.Execute := FALSE;
+	TableOffsetPos[axisIdx] := Axis[axisIdx].ActPos;
+	OldPosition[axisIdx] := Axis[axisIdx].ActPos;
+	OldVelocity[axisIdx] := 0;
+	IsExtSetPointDone[axisIdx]:=FALSE;
+END_FOR
+
+AxisTableBuf.OK		:= FALSE;
+
+MoveToPosFirstTime  := FALSE;
+Idx0FirstTime		:= TRUE;
+MoveToPosState		:= S_FillTable;
+
+(*Index*)
+CurrentTableIdx		:= 0;
+CurrentTableOffset	:= 0;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WaitExtSetPoint" Id="{5ecebe95-c4f5-4670-a007-26f5343a216a}">
+      <Implementation>
+        <ST><![CDATA[
+IsSetPointComplete := TRUE;
+FOR axisIdx := 1 TO No DO
+	IF AxisNeedRun[axisIdx] THEN
+		IF Axis[axisIdx].EnableSetPointGenerator.Done THEN
+			Axis[axisIdx].EnableSetPointGenerator.Execute := FALSE;
+			IsExtSetPointDone[axisIdx] := TRUE;
+		END_IF
+		IsSetPointComplete := IsSetPointComplete AND IsExtSetPointDone[axisIdx];
+	END_IF
+END_FOR
+IF IsSetPointComplete THEN
+	MoveToPosState := S_Run;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MoveToColPos">
+      <LineId Id="24" Count="82" />
+    </LineIds>
+    <LineIds Name="MoveToColPos.EnableExtSetPoint">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+    <LineIds Name="MoveToColPos.FillTable">
+      <LineId Id="0" Count="10" />
+    </LineIds>
+    <LineIds Name="MoveToColPos.Initial">
+      <LineId Id="0" Count="20" />
+    </LineIds>
+    <LineIds Name="MoveToColPos.WaitExtSetPoint">
+      <LineId Id="0" Count="13" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="ST_AxisTableBuf" Id="{573478b2-28b8-40ad-b94d-cef3abcefc96}">
+    <Declaration><![CDATA[{attribute 'pack_mode' := '1'} 
+TYPE ST_AxisTableBuf :
+STRUCT
+	Table	: ARRAY [1..No, 0..1999] OF LREAL;
+	OK		: BOOL;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

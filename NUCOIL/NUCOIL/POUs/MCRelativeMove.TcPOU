@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="MCRelativeMove" Id="{c75ca0f5-2ad9-49e8-95c4-f4ed81c2ef4a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MCRelativeMove
+VAR
+	RelativeMOVE	: ARRAY [1..No] OF MC_MoveRelative;
+	Input			: ARRAY [1..No] OF ST_MCRelativeInput;
+	Output			: ARRAY [1..No] OF ST_MCRelativeOutput;
+	Trig				: ARRAY [1..No] OF R_TRIG;
+	idx				: INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR idx:=1 TO No DO
+	IF Input[idx].Execute = TRUE THEN
+		Trig[idx](CLK := TRUE);
+	ELSE
+		Trig[idx](CLK := FALSE);
+	END_IF
+	RelativeMOVE[idx](
+		Execute  			:= Trig[idx].Q,
+		Distance			:= Input[idx].Distance,
+		Velocity  			:= Input[idx].Velocity,
+		Acceleration  		:= Input[idx].Acceleration,
+		Deceleration 		:= Input[idx].Deceleration,
+		Jerk				:= Input[idx].Jerk,
+		Axis				:= Axis[idx].Axis,
+
+		Done 			=> Output[idx].Done,
+		Busy 			=> Output[idx].Busy,
+		Active 			=> Output[idx].Active,
+		CommandAborted => Output[idx].CommandAborted,
+		Error 			=> Output[idx].Error,
+		ErrorID 			=> Output[idx].ErrorID
+	);
+END_FOR]]></ST>
+    </Implementation>
+    <LineIds Name="MCRelativeMove">
+      <LineId Id="8" Count="22" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_PosNear" Id="{a1051348-cece-4d80-a5bb-f772a230f4ba}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PosNear
+VAR_INPUT
+	AxisIdx		: INT;
+	Offset		: LREAL;
+END_VAR
+VAR_OUTPUT
+	IsNear		: BOOL:=FALSE;
+END_VAR
+VAR
+	ActPos		: LREAL;
+	SetPos		: LREAL;
+	ActMSet		: LREAL;
+	OffsetByCount: LREAL;
+	Scaling		: LREAL:=1;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IsNear			 := FALSE;
+ActPos			 := Axis[AxisIdx].Axis.NcToPlc.ActPos;
+SetPos			 := Axis[AxisIdx].Axis.NcToPlc.SetPos;
+ActMSet			 := ABS(ActPos - SetPos);
+OffsetByCount	 := Offset*Scaling;
+IF  ActMSet <= OffsetByCount THEN
+	IsNear	:= TRUE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_PosNear">
+      <LineId Id="15" Count="7" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

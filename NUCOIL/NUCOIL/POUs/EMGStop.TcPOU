@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="EMGStop" Id="{08ca963d-1fcc-4267-9917-73043c71aae2}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EMGStop
+VAR
+	ENUMSTOPSTATE :(S_DisableSetPointGenerator ,S_STOP_DECOUPLE, S_STOP_HALT, S_STOP_RESET, S_STOP_RELATIVE, S_STOP_IDLE);
+	FirstTime		: BOOL:=TRUE;
+	EMGStopState	: ARRAY [1..No] OF INT;
+	idx				: INT:=1;
+	MasterResetTrig	: R_TRIG;
+	HaltTrig			   : ARRAY [1..No] OF R_TRIG;
+	ResetTrig		: ARRAY [1..No] OF R_TRIG;
+	ResetTimer		: TON;
+	RelativeMOVE	: RelativeMOVE;
+	RelativeMOVE2	: RelativeMOVE2;
+	EMGStopCompleteNum : INT:=0;
+	CloseOil			: FB_CloseOil;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+IF Emgstoptrig = TRUE THEN
+	IF FirstTime THEN
+		FirstTime	:= FALSE;
+		IF State <> ENUMSTATE.S_ERROR AND State <> ENUMSTATE.S_TROUBLESHOOT AND State <> ENUMSTATE.S_TROSHO_MANMOV THEN
+			State:= ENUMSTATE.S_IDLE;
+		END_IF
+		ProFirstTime   := TRUE;
+		SubRunAloneFirstTime := TRUE;
+		MoveToPosFirstTime	:= TRUE;
+		ZRTFirstTime := TRUE;
+		SubRunning	:= FALSE;
+		MoveToColPosRunning := FALSE;
+				CloseOil();(*關閉油機*)
+		SpeedDownTo0 := FALSE;
+
+
+		(*---------- 生產部分---------*)
+(*		Override		 := 100;*)
+		Producing 	 := FALSE;
+		CycleLastCmdIsRun := TRUE;
+		(*--------------------------------*)
+
+		MasterResetTrig(CLK:= FALSE);
+		FOR idx:=1 TO No DO
+			EMGStopState[idx] := S_DisableSetPointGenerator;
+			HaltTrig[idx](CLK:=FALSE);
+			ResetTrig[idx](CLK:= FALSE);
+		END_FOR
+	END_IF
+
+(*Master Reset*)
+MasterResetTrig(CLK:= TRUE);
+Master.fbMC_Reset(
+	Execute:=MasterResetTrig.Q,
+	Axis:=Master.Axis
+);
+Master.fbMC_MoveRelative[1](
+	Execute   :=FALSE,
+	 Axis	:=Master.Axis,
+);
+Master.fbMC_MoveRelative[2](
+	Execute   :=FALSE,
+	 Axis	:=Master.Axis
+);
+
+	FOR idx:=1 TO No DO
+		IF AxisIsOn[idx] THEN
+			CASE EMGStopState[idx] OF
+				S_DisableSetPointGenerator:
+					Axis[idx].DisableSetPointGenerator(Execute := TRUE, Axis :=  Axis[idx].Axis);
+					IF Axis[idx].DisableSetPointGenerator.Done THEN
+						 EMGStopState[idx] := S_STOP_DECOUPLE;
+					END_IF
+				S_STOP_DECOUPLE:
+					(*Decouple*)
+					Cam[idx].CamOut(Execute := TRUE, Slave:=Axis[idx].Axis);
+					IF Cam[idx].CamOut.Done THEN
+						 EMGStopState[idx] := S_STOP_HALT;
+					END_IF
+				S_STOP_HALT:
+					(*MC_HALT*)
+					HaltTrig[idx](CLK:= TRUE);
+					Halt[idx](
+						Execute 		:= HaltTrig[idx].Q,
+						Deceleration 	:= BrakeParam[idx].Deceleration,
+						Jerk 		:= BrakeParam[idx].Jerk,
+						BufferMode 	:= MC_Aborting,
+						Axis			:= Axis[idx].Axis
+					);
+					IF Halt[idx].Done OR Halt[idx].Error THEN
+						EMGStopState[idx] := S_STOP_RESET;
+					END_IF
+				S_STOP_RESET:
+					(*所有軸Reset=>停止或是清除ALARM*)
+					ResetTrig[idx](CLK:= TRUE);
+					Axis[idx].fbMC_Reset(
+						Execute:=ResetTrig[idx].Q,
+						Axis:=Axis[idx].Axis
+					);
+					IF Axis[idx].fbMC_Reset.Done = TRUE THEN
+						EMGStopState[idx] := S_STOP_RELATIVE;
+					END_IF
+				S_STOP_RELATIVE:
+					(*恢復手動和生產的相對運動功能*)
+					Axis[idx].fbMC_MoveRelative[1](
+						Execute   :=FALSE,
+						 Axis	:=Axis[idx].Axis,
+					);
+					Axis[idx].fbMC_MoveRelative[2](
+						Execute   :=FALSE,
+						 Axis	:=Axis[idx].Axis
+					);
+					(*恢復ZRT用JOG*)
+					AxisValue[idx].Jog_JogForward       := FALSE;
+					AxisValue[idx].Jog_JogBackwards := FALSE;
+
+					EMGStopState[idx] :=S_STOP_IDLE;
+
+			END_CASE
+		ELSE
+			(*沒開起的軸直接IDLE*)
+			EMGStopState[idx] :=S_STOP_IDLE;
+		END_IF
+	END_FOR
+
+	EMGStopCompleteNum := 0;
+	FOR Idx:= 1 TO No DO
+		IF EMGStopState[idx] = S_STOP_IDLE THEN
+			EMGStopCompleteNum := EMGStopCompleteNum + 1;
+		END_IF
+	END_FOR
+	(*全部做完*)
+	IF EMGStopCompleteNum = No THEN
+		Emgstoptrig := FALSE;
+		FirstTime := TRUE;
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="EMGStop">
+      <LineId Id="15" Count="118" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
